@@ -1,0 +1,6 @@
+{
+	"appId": "io.hooda.app",
+	"appName": "hooda",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}

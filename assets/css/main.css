@@ -1,0 +1,41 @@
+/* Typography */
+@font-face {
+    font-family: Arnika;
+    font-weight: 300;
+    font-display: swap;
+    src: url("~assets/fonts/arnika_fanum_ulight.woff") format("woff"),
+        url("~assets/fonts/arnika_fanum_ulight.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: Arnika;
+    font-weight: 400;
+    font-display: swap;
+    src: url("~assets/fonts/arnika_fanum.woff") format("woff"), url("~assets/fonts/arnika_fanum.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: Arnika;
+    font-weight: 700;
+    font-display: swap;
+    src: url("~assets/fonts/arnika_fanum_bold.woff") format("woff"),
+        url("~assets/fonts/arnika_fanum_bold.woff2") format("woff2");
+}
+body {
+    font-family: Arnika;
+}
+.w-100 {
+    width: 100%;
+}
+.h-100 {
+    height: 100%;
+}
+.rtl {
+    direction: rtl;
+}
+.h-full {
+    height: 100vh;
+}
+.overflow-hidden {
+    overflow: hidden;
+}
