@@ -40,11 +40,13 @@
                 dir="auto"
                 filled
                 flat
+                single-line
                 type="number"
                 label="شماره موبایل"
                 prepend-inner-icon="mdi-phone"
                 rounded
                 hide-details="auto"
+                autofocus
               />
             </v-col>
             <v-col cols="12" sm="4" offset-sm="4">
@@ -184,6 +186,13 @@ export default {
       }
     }
   },
+  watch: {
+    step (newVal) {
+      if (newVal === 2) {
+        setTimeout(() => { document.getElementsByClassName('otp-input')[0].focus() }, 100)
+      }
+    }
+  },
   methods: {
     submit () {
       const self = this
@@ -191,7 +200,9 @@ export default {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           self.loading = false
-          if (self.step < 3) { self.step++ }
+          if (self.step < 3) { self.step++ } else {
+            this.$router.push('/auth/login')
+          }
 
           resolve('foo')
         }, 1000)
@@ -225,6 +236,9 @@ export default {
 }
 .v-stepper__step {
     padding: 10px !important;
+}
+.verify-form {
+  direction:ltr;
 }
 .verify-form  input.otp-input {
   background-color: rgb(156 156 157 / 12%);

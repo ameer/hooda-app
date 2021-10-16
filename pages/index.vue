@@ -9,6 +9,11 @@
           ثبت نام
         </nuxt-link>
       </v-col>
+      <v-col cols="12" class="text-center">
+        <nuxt-link to="/auth/login" class="accent--text text-decoration-none">
+          ورود
+        </nuxt-link>
+      </v-col>
     </v-row>
   </v-container>
 </template>

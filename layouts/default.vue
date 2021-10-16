@@ -8,13 +8,12 @@
       right
       app
     >
-      <v-list>
+      <v-img src="/logo-fa-text-below.svg" contain max-width="85px" class="mx-auto mt-4" />
+      <v-divider class="mt-4" />
+      <v-list class="">
         <v-list-item
           v-for="(item, i) in items"
           :key="i"
-          :to="item.to"
-          router
-          exact
         >
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
@@ -60,14 +59,29 @@ export default {
       fixed: false,
       items: [
         {
-          icon: 'mdi-apps',
-          title: 'Welcome',
+          icon: 'mdi-cellphone-link',
+          title: 'دستگاه‌های من',
           to: '/'
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
+          icon: 'mdi-share-variant-outline',
+          title: 'معرفی به دوستان',
+          to: '/'
+        },
+        {
+          icon: 'mdi-phone-outline',
+          title: 'ارتباط با ما',
+          to: '/'
+        },
+        {
+          icon: 'mdi-help',
+          title: 'راهنما',
+          to: '/'
+        },
+        {
+          icon: 'mdi-cog-outline',
+          title: 'تنظیمات',
+          to: '/'
         }
       ],
       miniVariant: false,
