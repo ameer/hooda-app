@@ -79,7 +79,7 @@ export default {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           self.loading = false
-          this.$router.push('/dashboard/')
+          this.$router.push('/dashboard/add-device')
           resolve('foo')
         }, 1000)
       })

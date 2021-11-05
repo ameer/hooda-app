@@ -42,6 +42,16 @@ body {
 .absolute {
     position: absolute !important;
 }
+.bottom-0 {
+    bottom: 0;
+}
+.right-0 {
+    right: 0;
+}
+.fab.bottom.right {
+    bottom: 2rem;
+    right: 2rem;
+}
 .img-container {
     display: inline-block;
     padding: 1.5rem;
