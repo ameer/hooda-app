@@ -12,7 +12,7 @@
         </div>
       </v-col>
       <v-col cols="12" sm="6">
-        <v-form ref="registerMobile" v-model="valid">
+        <v-form ref="registerMobile" v-model="valid" @submit.prevent="submit">
           <v-text-field
             dir="auto"
             filled
@@ -22,26 +22,25 @@
             label="شماره موبایل"
             :class="{'validInput': valid}"
             prepend-inner-icon="mdi-phone"
-            :rules="[rules.required, rules.numeric, rules.startsWith09, rules.mobileLength]"
+            :rules="[rules.required, rules.validMobile]"
             rounded
-            hide-details="auto"
             @focus="scrollIntoView"
           />
+          <v-btn
+            block
+            large
+            rounded
+            class="text-h6 mt-4"
+            color="primary"
+            :loading="loading"
+            :disabled="!valid"
+            type="submit"
+          >
+            ادامه
+          </v-btn>
         </v-form>
       </v-col>
-      <v-col cols="12" sm="4" offset-sm="4">
-        <v-btn
-          block
-          large
-          rounded
-          class="text-h6"
-          color="primary"
-          :loading="loading"
-          @click="submit"
-        >
-          ادامه
-        </v-btn>
-      </v-col>
+      <v-col cols="12" sm="4" offset-sm="4" />
     </v-row>
     <!-- <v-stepper v-model="step" flat tile elevation="0" class="accent">
       <v-stepper-header
@@ -234,13 +233,12 @@ export default {
     return {
       loading: false,
       valid: false,
+      messages: [],
       step: 1,
       vcode: '',
       rules: {
         required: v => !!v || 'برای ادامه به شماره موبایل شما نیاز داریم.',
-        startsWith09: v => /^09/.test(v) || 'شماره موبایل باید با 09 شروع شود.',
-        mobileLength: v => (!!v && v.length === 11) || 'شماره موبایل باید 11 رقم باشد',
-        numeric: v => /^\d+$/.test(v) || 'شماره موبایل باید تنها شامل عدد باشد'
+        validMobile: v => /^09\d{9}$/.test(v) || 'شماره موبایل صحیح نمی‌باشد.'
       }
     }
   },
@@ -269,20 +267,7 @@ export default {
   },
   methods: {
     submit () {
-      const self = this
-      self.loading = true
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          self.loading = false
-          if (self.step < 3) {
-            self.step++
-          } else {
-            this.$router.push('/auth/login')
-          }
-
-          resolve('foo')
-        }, 1000)
-      })
+      // if(this.$refs.registerForm.validate())
     },
     scrollIntoView (e) {
       e.target.scrollIntoView({ behavior: 'smooth' })
