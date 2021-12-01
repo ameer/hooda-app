@@ -98,7 +98,22 @@ export default {
       title: 'هــودا'
     }
   },
+  created () {
+    this.$nuxt.$on('postReq', this.postReq)
+  },
   methods: {
+    postReq (endpoint, event, data) {
+      const self = this
+      self.$axios.get('/csrf-cookie', { withCredentials: true })
+      self.$axios
+        .post(endpoint, data, { withCredentials: true })
+        .then((resp) => {
+          self.$nuxt.$emit(event, resp)
+        })
+        .catch((err) => {
+          self.$nuxt.$emit('error', err)
+        })
+    },
     goFullScreen () {
       const elem = document.documentElement
       if (elem.requestFullscreen) {

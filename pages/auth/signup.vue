@@ -12,8 +12,9 @@
         </div>
       </v-col>
       <v-col cols="12" sm="6">
-        <v-form ref="registerMobile" v-model="valid" @submit.prevent="submit">
+        <v-form ref="phoneNumberForm" v-model="valid" @submit.prevent="submitPhoneNumber">
           <v-text-field
+            v-model="phoneNumber"
             dir="auto"
             filled
             flat
@@ -40,7 +41,64 @@
           </v-btn>
         </v-form>
       </v-col>
-      <v-col cols="12" sm="4" offset-sm="4" />
+      <v-col cols="12" sm="6">
+        <v-form ref="otpForm" v-model="valid" @submit.prevent="submitOTP">
+          <OtpInput
+            ref="otpInput"
+            v-model="otp"
+            style="justify-content: space-between"
+            input-classes="otp-input"
+            separator=""
+            :num-inputs="6"
+            :should-auto-focus="true"
+            :is-input-num="true"
+            :class="{ disabled: loading }"
+            @on-change="handleOnChange"
+            @on-complete="handleOnComplete"
+          />
+          <v-btn
+            block
+            large
+            rounded
+            class="text-h6 mt-4"
+            color="primary"
+            :loading="loading"
+            :disabled="!valid"
+            type="submit"
+          >
+            ادامه
+          </v-btn>
+        </v-form>
+      </v-col>
+      <v-col cols="12" sm="6">
+        <v-form ref="userInfoForm" v-model="valid" @submit.prevent="submitUserInfo">
+          <OtpInput
+            ref="otpInput"
+            v-model="otp"
+            style="justify-content: space-between"
+            input-classes="otp-input"
+            separator=""
+            :num-inputs="6"
+            :should-auto-focus="true"
+            :is-input-num="true"
+            :class="{ disabled: loading }"
+            @on-change="handleOnChange"
+            @on-complete="handleOnComplete"
+          />
+          <v-btn
+            block
+            large
+            rounded
+            class="text-h6 mt-4"
+            color="primary"
+            :loading="loading"
+            :disabled="!valid"
+            type="submit"
+          >
+            ادامه
+          </v-btn>
+        </v-form>
+      </v-col>
     </v-row>
     <!-- <v-stepper v-model="step" flat tile elevation="0" class="accent">
       <v-stepper-header
@@ -234,12 +292,15 @@ export default {
       loading: false,
       valid: false,
       messages: [],
-      step: 1,
-      vcode: '',
+      phoneNumber: '',
+      maskedPhoneNumber: '',
+      loginHash: '',
+      otp: '',
       rules: {
         required: v => !!v || 'برای ادامه به شماره موبایل شما نیاز داریم.',
         validMobile: v => /^09\d{9}$/.test(v) || 'شماره موبایل صحیح نمی‌باشد.'
-      }
+      },
+      step: 1
     }
   },
   computed: {
@@ -265,19 +326,50 @@ export default {
       }
     }
   },
+  created () {
+    this.$nuxt.$on('error', (error) => {
+      this.loading = false
+      console.log(error)
+    })
+    this.$nuxt.$on('otpSent', (resp) => {
+      this.loading = false
+      this.loginHash = resp.data.loginHash
+      this.maskedPhoneNumber = resp.data.phoneNumber
+    })
+    this.$nuxt.$on('otpVerified', (resp) => {
+      this.loading = false
+      console.log(resp)
+    })
+  },
+  beforeDestroy () {
+    this.$nuxt.$off('error')
+    this.$nuxt.$off('otpSent')
+    this.$nuxt.$off('otpVerified')
+  },
   methods: {
-    submit () {
-      // if(this.$refs.registerForm.validate())
+    submitPhoneNumber () {
+      if (!this.$refs.phoneNumberForm.validate()) {
+        return false
+      }
+      this.loading = true
+      this.$nuxt.$emit('postReq', 'auth/verify-phone', 'otpSent', { phone: this.phoneNumber })
+    },
+    submitOTP () {
+      if (!this.$refs.otpForm.validate()) {
+        return false
+      }
+      this.loading = true
+      this.$nuxt.$emit('postReq', 'auth/verify-otp', 'otpVerified', { phone: this.phoneNumber, loginHash: this.loginHash, otp: this.otp })
     },
     scrollIntoView (e) {
       e.target.scrollIntoView({ behavior: 'smooth' })
     },
     handleOnComplete (value) {
-      this.vcode = value
-      this.submit()
+      this.otp = value
+      this.submitOTP()
     },
     handleOnChange (value) {
-      this.vcode = value
+      this.otp = value
     },
     clearInput () {
       this.$refs.otpInput.clearInput()
