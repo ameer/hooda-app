@@ -104,15 +104,30 @@ export default {
   methods: {
     postReq (endpoint, event, data) {
       const self = this
-      self.$axios.get('/csrf-cookie', { withCredentials: true })
-      self.$axios
-        .post(endpoint, data, { withCredentials: true })
-        .then((resp) => {
-          self.$nuxt.$emit(event, resp)
-        })
-        .catch((err) => {
-          self.$nuxt.$emit('error', err)
-        })
+      self.$axios.get('/csrf-cookie', { withCredentials: true }).then(() => {
+        self.$axios
+          .post(endpoint, data, { withCredentials: true })
+          .then((resp) => {
+            self.$nuxt.$emit(event, resp)
+          })
+          .catch((err) => {
+            self.$nuxt.$emit('error')
+            let msg = ''
+            if ('errors' in err.response.data) {
+              msg = self.errMsgGenerator(err.response.data.errors)
+            } else {
+              msg = err.response.data.message
+            }
+            self.$toast.error(msg)
+          })
+      })
+    },
+    errMsgGenerator (errorsObject) {
+      let msg = ''
+      for (const key in errorsObject) {
+        msg += errorsObject[key] + '\n'
+      }
+      return msg
     },
     goFullScreen () {
       const elem = document.documentElement

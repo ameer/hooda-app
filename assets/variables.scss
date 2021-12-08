@@ -3,17 +3,45 @@
 // The variables you want to modify
 // $font-size-root: 20px;
 $body-font-family: "Arnika";
-$headings: (
-    'h1': ('letter-spacing':normal),
-    'h2': ('letter-spacing':normal),
-    'h3': ('letter-spacing':normal),
-    'h4': ('letter-spacing':normal),
-    'h5': ('letter-spacing':normal),
-    'h6': ('letter-spacing':normal),
-    'subtitle-1': ('letter-spacing':normal),
-    'subtitle-2': ('letter-spacing':normal),
-    'body-1': ('letter-spacing':normal),
-    'body-2': ('letter-spacing':normal),
-    'button': ('letter-spacing':normal),
-    'caption': ('letter-spacing':normal),
-  );
+$headings:(
+    'h1': (
+      'letter-spacing': normal
+    ),
+    'h2': (
+      'letter-spacing': normal
+    ),
+    'h3': (
+      'letter-spacing': normal
+    ),
+    'h4': (
+      'letter-spacing': normal
+    ),
+    'h5': (
+      'letter-spacing': normal
+    ),
+    'h6': (
+      'letter-spacing': normal
+    ),
+    'subtitle-1': (
+      'letter-spacing': normal
+    ),
+    'subtitle-2': (
+      'letter-spacing': normal
+    ),
+    'body-1': (
+      'letter-spacing': normal,
+      'size': 1.125rem
+    ),
+    'body-2': (
+      'letter-spacing': normal
+    ),
+    'button': (
+        'letter-spacing': normal
+    ),
+    'caption': (
+      'letter-spacing': normal
+    ),
+    'overline': (
+      'letter-spacing': normal
+    )
+);
