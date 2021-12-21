@@ -50,7 +50,30 @@ export default {
     'vue-toastification/nuxt'
   ],
   auth: {
-    // Options
+    strategies: {
+      local: {
+        token: {
+          property: false
+        },
+        user: {
+          property: false
+        },
+        endpoints: {
+          // (optional) If set, we send a get request to this endpoint before login
+          csrf: {
+            url: '/csrf-cookie'
+          },
+          login: { url: 'auth/login', method: 'post', withCredentials: true },
+          logout: { url: 'auth/logout', method: 'post', withCredentials: true },
+          user: { url: 'auth/user', method: 'get' }
+        },
+        redirect: {
+          login: '/auth/login',
+          logout: '/',
+          home: '/dashboard'
+        }
+      }
+    }
   },
   toast: {
     timeout: 3000,

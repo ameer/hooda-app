@@ -14,11 +14,31 @@
           ورود
         </nuxt-link>
       </v-col>
+      <v-btn v-if="isLoggedIn" @click="logout">
+        logout
+      </v-btn>
     </v-row>
   </v-container>
 </template>
 <script>
 export default {
-  layout: 'startup'
+  layout: 'startup',
+  computed: {
+    isLoggedIn () {
+      return this.$auth.loggedIn
+    }
+  },
+  methods: {
+    async logout () {
+      // this.$axios.post('/auth/logout', {}, { withCredentials: true }).then(() => {
+      //   this.$router.push('/')
+      // })
+      await this.$auth.logout({
+        headers: {
+          Authorization: this.$auth.strategy.token.get()
+        }
+      })
+    }
+  }
 }
 </script>

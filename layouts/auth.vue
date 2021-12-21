@@ -100,6 +100,11 @@ export default {
   },
   created () {
     this.$nuxt.$on('postReq', this.postReq)
+    this.$nuxt.$on('login', this.login)
+  },
+  beforeDestroy () {
+    this.$nuxt.$off('postReq')
+    this.$nuxt.$off('login')
   },
   methods: {
     postReq (endpoint, event, data) {
@@ -121,6 +126,16 @@ export default {
             self.$toast.error(msg)
           })
       })
+    },
+    async login (loginData) {
+      try {
+        await this.$axios.get('/csrf-cookie', { withCredentials: true })
+        await this.$auth.loginWith('local', { data: loginData })
+      } catch (err) {
+        this.$nuxt.$emit('error')
+        const msg = err.response.data.message
+        this.$toast.error(msg)
+      }
     },
     errMsgGenerator (errorsObject) {
       let msg = ''

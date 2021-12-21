@@ -1,63 +1,70 @@
 <template>
-  <v-container class="px-8">
-    <div class="text-center">
-      <h4 class="text--primary mb-2">
-        ورود به اپلیکیشن هودا
-      </h4>
-    </div>
-    <v-row align="center">
-      <v-col cols="12" sm="6" offset-sm="3">
-        <p class="mt-8 text-center text--secondary text-body-1">
-          جهت ورود لطفاْ شماره موبایل و گذرواژه خود را وارد کنید
-        </p>
+  <v-container class="pt-0 px-6 h-2/3">
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="6" class="pb-0">
+        <div class="text-center">
+          <h4 class="text--primary mb-2">
+            ورود به اپلیکیشن هودا
+          </h4>
+          <p class="text--secondary text-body-2 mb-8">
+            جهت ورود لطفاْ شماره موبایل و گذرواژه خود را وارد کنید
+          </p>
+        </div>
       </v-col>
-      <v-col cols="12" sm="6" offset-sm="3">
-        <v-text-field
-          dir="auto"
-          filled
-          flat
-          single-line
-          type="number"
-          label="شماره موبایل"
-          prepend-inner-icon="mdi-phone"
-          rounded
-          hide-details="auto"
-          autofocus
-        />
-      </v-col>
-      <v-col cols="12" sm="6" offset-sm="3">
-        <v-text-field
-          dir="auto"
-          class="mb-4"
-          filled
-          type="password"
-          flat
-          single-line
-          label="گذرواژه"
-          prepend-inner-icon="mdi-lock"
-          rounded
-          hide-details="auto"
-        />
-      </v-col>
-      <v-col cols="12" sm="6" offset-sm="3">
-        <nuxt-link class="text-decoration-none" to="/auth/forgot-password">
-          بازیابی رمز عبور
-        </nuxt-link>
-      </v-col>
-      <v-col cols="12" sm="6" offset-sm="3">
-        <v-checkbox label="ذخیره اطلاعات ورود" />
-      </v-col>
-      <v-col cols="12" sm="4" offset-sm="4">
-        <v-btn
-          block
-          large
-          rounded
-          color="primary"
-          :loading="loading"
-          @click="submit"
-        >
-          ورود
-        </v-btn>
+      <v-col cols="12" sm="6" class="pt-0">
+        <v-form ref="userLoginForm" v-model="valid" @submit.prevent="submitLogin">
+          <v-text-field
+            v-model="login.phone"
+            class="mb-4"
+            dir="auto"
+            filled
+            flat
+            single-line
+            type="number"
+            label="شماره موبایل"
+            prepend-inner-icon="mdi-phone"
+            rounded
+            hide-details="auto"
+            autofocus
+            tabindex="1"
+          />
+          <v-text-field
+            v-model="login.password"
+            class="mb-4"
+            dir="auto"
+            filled
+            type="password"
+            flat
+            single-line
+            label="گذرواژه"
+            prepend-inner-icon="mdi-lock"
+            rounded
+            hide-details="auto"
+            tabindex="2"
+          />
+          <div class="text-center">
+            <nuxt-link class="text-decoration-none text-body-2 mb-4" to="/auth/forgot-password">
+              فراموشی گذرواژه
+            </nuxt-link>
+          </div>
+          <v-switch
+            v-model="login.remember"
+            class="mb-4"
+            inset
+            label="ذخیره اطلاعات ورود"
+            hide-details="auto"
+          />
+          <v-btn
+            block
+            large
+            rounded
+            color="primary"
+            :disabled="!valid"
+            :loading="loading"
+          >
+            ورود
+          </v-btn>
+        </v-form>
       </v-col>
     </v-row>
   </v-container>
@@ -69,20 +76,30 @@ export default {
   auth: 'guest',
   data () {
     return {
-      loading: false
+      valid: false,
+      loading: false,
+      login: {
+        phone: '',
+        password: '',
+        remember: false
+      }
     }
   },
+  created () {
+    this.$nuxt.$on('error', () => {
+      this.loading = false
+      this.login.password = ''
+    })
+  },
+  beforeDestroy () {
+    this.$nuxt.$off('error')
+  },
   methods: {
-    submit () {
-      const self = this
-      self.loading = true
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          self.loading = false
-          this.$router.push('/dashboard/add-device')
-          resolve('foo')
-        }, 1000)
-      })
+    submitLogin () {
+      if (this.valid) {
+        this.loading = true
+        this.$nuxt.$emit('login', this.login)
+      }
     }
   }
 }
