@@ -30,9 +30,6 @@ export default {
   },
   methods: {
     async logout () {
-      // this.$axios.post('/auth/logout', {}, { withCredentials: true }).then(() => {
-      //   this.$router.push('/')
-      // })
       await this.$auth.logout({
         headers: {
           Authorization: this.$auth.strategy.token.get()

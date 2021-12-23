@@ -7,12 +7,12 @@
             ورود به اپلیکیشن هودا
           </h4>
           <p class="text--secondary text-body-2 mb-8">
-            جهت ورود لطفاْ شماره موبایل و گذرواژه خود را وارد کنید
+            جهت ورود لطفاً شماره موبایل و گذرواژه خود را وارد کنید
           </p>
         </div>
       </v-col>
       <v-col cols="12" sm="6" class="pt-0">
-        <v-form ref="userLoginForm" v-model="valid" @submit.prevent="submitLogin">
+        <v-form ref="userLoginForm" v-model="valid" autocomplete="off" @submit.prevent="submitLogin">
           <v-text-field
             v-model="login.phone"
             class="mb-4"
@@ -20,16 +20,21 @@
             filled
             flat
             single-line
-            type="number"
+            type="tel"
             label="شماره موبایل"
+            validate-on-blur
             prepend-inner-icon="mdi-phone"
             rounded
+            maxlength="11"
+            minlength="11"
+            :rules="[(v) => !!v || 'برای ورود به شماره همراه شما نیاز داریم',rules.phone]"
             hide-details="auto"
             autofocus
             tabindex="1"
           />
           <v-text-field
             v-model="login.password"
+            autocomplete="off"
             class="mb-4"
             dir="auto"
             filled
@@ -39,6 +44,7 @@
             label="گذرواژه"
             prepend-inner-icon="mdi-lock"
             rounded
+            :rules="[(v) => !!v || 'برای ورود گذرواژه خود را وارد کنید']"
             hide-details="auto"
             tabindex="2"
           />
@@ -61,6 +67,8 @@
             color="primary"
             :disabled="!valid"
             :loading="loading"
+            type="submit"
+            tabindex="3"
           >
             ورود
           </v-btn>
@@ -82,6 +90,9 @@ export default {
         phone: '',
         password: '',
         remember: false
+      },
+      rules: {
+        phone: v => /^09[0-9]{9}$/.test(v) || 'شماره موبایل صحیح نیست'
       }
     }
   },

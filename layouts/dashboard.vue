@@ -8,12 +8,7 @@
       right
       app
     >
-      <v-img
-        src="/logo-fa-text-below.svg"
-        contain
-        max-width="85px"
-        class="mx-auto mt-4"
-      />
+      <user-avatar :user="user" />
       <v-divider class="mt-4" />
       <v-list class="">
         <v-list-item v-for="(item, i) in items" :key="i">
@@ -26,7 +21,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar fixed app elevation="0" color="#fbfbfd">
+    <v-app-bar fixed app color="#fbfbfd">
       <v-app-bar-nav-icon class="text--primary" @click.stop="drawer = !drawer">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +47,7 @@
         fab
         color="accent"
         nuxt
-        to="/dashboard/my-devices"
+        to="/dashboard/"
       >
         <v-icon color="primary">
           mdi-home-outline
@@ -79,7 +74,10 @@
 </template>
 
 <script>
+import userAvatar from '~/components/userAvatar.vue'
 export default {
+  components: { userAvatar },
+  middleware: 'auth',
   data () {
     return {
       clipped: false,
@@ -118,9 +116,31 @@ export default {
       title: 'هــودا'
     }
   },
+  computed: {
+    user () {
+      return this.$auth.user
+    }
+  },
+  created () {
+    this.$nuxt.$on('getReq', this.getReq)
+  },
+  beforeDestroy () {
+    this.$nuxt.$off('getReq', this.getReq)
+  },
   methods: {
     goBack () {
       this.$router.go(-1)
+    },
+    getReq (endpoint, event) {
+      const self = this
+      self.$axios.get(endpoint).then(function (response) {
+        this.$nuxt.$emit(event, response.data)
+      }).catch((err) => {
+        self.$nuxt.$emit('error')
+        let msg = ''
+        msg = err.response.data.message
+        self.$toast.error(msg)
+      })
     }
   }
 }

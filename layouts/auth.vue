@@ -32,11 +32,8 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <!-- <v-app-bar fixed app elevation="0" color="#fbfbfd" class="justify-center">
-      <v-app-bar-nav-icon
-        class="absolute text--primary"
-        @click.stop="drawer = !drawer"
-      >
+    <v-app-bar fixed app color="transparent" elevation="0">
+      <v-app-bar-nav-icon class="text--primary" @click.stop="drawer = !drawer">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -50,17 +47,18 @@
           />
         </svg>
       </v-app-bar-nav-icon>
-      <v-toolbar-title
-        class="pr-0 font-weight-bold primary--text w-100 text-center"
-      >
-        <p class="mb-0">
-          {{ title }}
-        </p>
-      </v-toolbar-title>
-    </v-app-bar> -->
+    </v-app-bar>
     <v-main class="accent h-full">
-      <v-container fluid class="h-1/3 mt-4">
-        <img src="/svg/signup.svg" width="100%" height="100%" @click="goFullScreen">
+      <v-container fluid class="h-1/3">
+        <img
+          v-if="currentPage === 'auth-login'"
+          src="/logo.svg"
+          width="100%"
+          height="100%"
+          style="max-height:128px;"
+          @click="goFullScreen"
+        >
+        <img v-else src="/svg/signup.svg" width="100%" height="100%" @click="goFullScreen">
       </v-container>
       <Nuxt />
     </v-main>
@@ -98,43 +96,51 @@ export default {
       title: 'هــودا'
     }
   },
+  computed: {
+    currentPage () {
+      return this.$route.name
+    }
+  },
   created () {
     this.$nuxt.$on('postReq', this.postReq)
     this.$nuxt.$on('login', this.login)
+    this.$nuxt.$on('userLoggedIn', () => {
+      this.$toast.success(this.$auth.user.fullname + ' خوش آمدید')
+    })
   },
   beforeDestroy () {
     this.$nuxt.$off('postReq')
     this.$nuxt.$off('login')
+    this.$nuxt.$off('userLoggedIn')
   },
   methods: {
     postReq (endpoint, event, data) {
       const self = this
-      self.$axios.get('/csrf-cookie', { withCredentials: true }).then(() => {
-        self.$axios
-          .post(endpoint, data, { withCredentials: true })
-          .then((resp) => {
-            self.$nuxt.$emit(event, resp)
-          })
-          .catch((err) => {
-            self.$nuxt.$emit('error')
-            let msg = ''
-            if ('errors' in err.response.data) {
-              msg = self.errMsgGenerator(err.response.data.errors)
-            } else {
-              msg = err.response.data.message
-            }
-            self.$toast.error(msg)
-          })
-      })
+      self.$axios
+        .post(endpoint, data, { withCredentials: true })
+        .then((resp) => {
+          self.$nuxt.$emit(event, resp)
+        })
+        .catch((err) => {
+          self.$nuxt.$emit('error')
+          let msg = ''
+          if ('errors' in err.response.data) {
+            msg = self.errMsgGenerator(err.response.data.errors)
+          } else {
+            msg = err.response.data.message
+          }
+          self.$toast.error(msg)
+        })
     },
     async login (loginData) {
       try {
-        await this.$axios.get('/csrf-cookie', { withCredentials: true })
         await this.$auth.loginWith('local', { data: loginData })
+        this.$router.push('/dashboard')
       } catch (err) {
-        this.$nuxt.$emit('error')
-        const msg = err.response.data.message
-        this.$toast.error(msg)
+        console.log(err)
+        // this.$nuxt.$emit('error')
+        // const msg = err.response.data.message
+        // this.$toast.error(msg)
       }
     },
     errMsgGenerator (errorsObject) {

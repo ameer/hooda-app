@@ -50,10 +50,15 @@ export default {
     'vue-toastification/nuxt'
   ],
   auth: {
+    redirect: {
+      login: '/auth/login',
+      logout: '/',
+      home: '/dashboard/'
+    },
     strategies: {
       local: {
         token: {
-          property: false
+          property: 'access_token'
         },
         user: {
           property: false
@@ -65,12 +70,7 @@ export default {
           },
           login: { url: 'auth/login', method: 'post', withCredentials: true },
           logout: { url: 'auth/logout', method: 'post', withCredentials: true },
-          user: { url: 'auth/user', method: 'get' }
-        },
-        redirect: {
-          login: '/auth/login',
-          logout: '/',
-          home: '/dashboard'
+          user: { url: 'user/profile', method: 'get' }
         }
       }
     }

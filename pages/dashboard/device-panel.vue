@@ -30,6 +30,7 @@
 import gauge from '~/components/gauge.vue'
 export default {
   components: { gauge },
+  layout: 'dashboard',
   data () {
     return {
       loading: false,

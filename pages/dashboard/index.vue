@@ -3,7 +3,7 @@
     <h4 class="text--primary mb-4 text-center">
       دستگاه‌های من
     </h4>
-    <v-row align="start" justify="start" class="mt-4">
+    <!-- <v-row align="start" justify="start" class="mt-4">
       <v-col cols="6" class="text-center">
         <nuxt-link
           class="text-decoration-none"
@@ -13,7 +13,7 @@
             <v-img contain src="/payesh.svg" />
           </div>
           <p class="text--primary mb-1 text-center">
-            دستگاه هوشمند پایش محیط
+            پایش امنیت هوشمند
           </p>
           <p class="text--secondary font-weight-light text-center">
             کارگاه
@@ -26,7 +26,7 @@
             <v-img contain src="/smoke.svg" />
           </div>
           <p class="text--primary mb-1 text-center">
-            دستگاه هوشمند تشخیص دود
+            تشخیص دود هوشمند
           </p>
           <p class="text--secondary font-weight-light text-center">
             کارگاه۲
@@ -46,7 +46,17 @@
           </p>
         </nuxt-link>
       </v-col>
+    </v-row> -->
+    <v-row v-if="typeof devices === 'object' && devices.length > 0" align="start" justify="start" class="mt-4">
+      <v-col v-for="(device, i) in devices" :key="i" cols="12" sm="6" md="4">
+        <p>{{ device.name }}</p>
+      </v-col>
     </v-row>
+    <div v-else>
+      <p>
+        دستگاهی برای نمایش وجود ندارد.
+      </p>
+    </div>
     <v-btn
       elevation="4"
       color="green"
@@ -63,7 +73,25 @@
   </v-container>
 </template>
 <script>
-export default {}
+export default {
+  layout: 'dashboard',
+  data () {
+    return {
+      devices: []
+    }
+  },
+  fetch () {
+    this.$nuxt.$emit('getReq', 'user/devices', 'devicesReceived')
+  },
+  created () {
+    this.$nuxt.$on('devicesReceived', (devices) => {
+      this.devices = devices
+    })
+  },
+  beforeDestroy () {
+    this.$nuxt.$off('devicesReceived')
+  }
+}
 </script>
 <style>
 </style>

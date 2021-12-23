@@ -318,9 +318,10 @@ export default {
       this.loading = false
       this.step = 3
     })
-    this.$nuxt.$on('userRegistered', (resp) => {
+    this.$nuxt.$on('userRegistered', async (resp) => {
       this.loading = false
-      this.$auth.setUserToken(resp.access_token)
+      await this.$auth.setUserToken(resp.data.access_token)
+      this.$nuxt.$emit('userLoggedIn')
     })
   },
   beforeDestroy () {

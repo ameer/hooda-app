@@ -10,7 +10,7 @@
             <v-img contain src="/payesh.svg" />
           </div>
           <p class="text--primary mb-1 text-center">
-            دستگاه هوشمند پایش محیط
+            پایش امنیت هوشمند
           </p>
           <p class="text--secondary font-weight-light text-center">
             تشخیص دود و دزدگیر
@@ -23,7 +23,7 @@
             <v-img contain src="/smoke.svg" />
           </div>
           <p class="text--primary mb-1 text-center">
-            دستگاه هوشمند تشخیص دود
+            تشخیص دود هوشمند
           </p>
         </nuxt-link>
       </v-col>
@@ -42,7 +42,7 @@
 </template>
 <script>
 export default {
-
+  layout: 'dashboard'
 }
 </script>
 <style>

@@ -17,7 +17,7 @@ export default {
   data () {
     return {
       points: 43,
-      digit: 35,
+      digit: 22,
       radius: 257,
       max: 60,
       peaks: [10, 30, 50],
