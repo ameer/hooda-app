@@ -48,8 +48,28 @@
       </v-col>
     </v-row> -->
     <v-row v-if="typeof devices === 'object' && devices.length > 0" align="start" justify="start" class="mt-4">
-      <v-col v-for="(device, i) in devices" :key="i" cols="12" sm="6" md="4">
-        <p>{{ device.name }}</p>
+      <v-col
+        v-for="(device, i) in devices"
+        :key="i"
+        cols="12"
+        sm="6"
+        md="4"
+        class="text-center"
+      >
+        <nuxt-link
+          class="text-decoration-none"
+          :to="`/dashboard/device-panel/${device.id}`"
+        >
+          <div class="img-container mb-4">
+            <v-img contain :src="`/devices/${device.type}.svg`" />
+          </div>
+          <p class="text--primary mb-1 text-center">
+            {{ deviceName[device.type] }}
+          </p>
+          <p class="text--secondary font-weight-light text-center">
+            {{ device.location }}
+          </p>
+        </nuxt-link>
       </v-col>
     </v-row>
     <div v-else>
@@ -61,7 +81,7 @@
       elevation="4"
       color="green"
       fab
-      absolute
+      fixed
       class="fab bottom right"
       to="/dashboard/add-device"
       nuxt
@@ -77,7 +97,8 @@ export default {
   layout: 'dashboard',
   data () {
     return {
-      devices: []
+      devices: [],
+      deviceName: ['پایش امنیت هوشمند', 'تشخیص دود هوشمند', 'دزدگیر هوشمند']
     }
   },
   fetch () {

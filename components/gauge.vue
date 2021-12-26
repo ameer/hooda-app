@@ -14,10 +14,15 @@
 </template>
 <script>
 export default {
+  props: {
+    digit: {
+      type: Number,
+      default: 33
+    }
+  },
   data () {
     return {
       points: 43,
-      digit: 22,
       radius: 257,
       max: 60,
       peaks: [10, 30, 50],

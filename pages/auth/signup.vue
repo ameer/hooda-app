@@ -365,7 +365,7 @@ export default {
         return false
       }
       this.loading = true
-      this.$nuxt.$emit('postReq', 'auth/register', 'userRegistered', { fullname: this.fullname, email: this.email, password: this.password, password_confirmation: this.passwordConfirm, city: this.city })
+      this.$nuxt.$emit('postReq', 'auth/register', 'userRegistered', { fullname: this.fullname, email: this.email, password: this.password, password_confirmation: this.passwordConfirm, city: this.city, phone: this.phoneNumber })
     },
     scrollIntoView (e) {
       e.target.scrollIntoView({ behavior: 'smooth' })

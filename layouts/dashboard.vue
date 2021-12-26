@@ -123,24 +123,53 @@ export default {
   },
   created () {
     this.$nuxt.$on('getReq', this.getReq)
+    this.$nuxt.$on('postReq', this.postReq)
   },
   beforeDestroy () {
     this.$nuxt.$off('getReq', this.getReq)
+    this.$nuxt.$off('postReq', this.postReq)
   },
   methods: {
     goBack () {
       this.$router.go(-1)
     },
+    postReq (endpoint, event, data) {
+      const self = this
+      self.$axios
+        .post(endpoint, data, { withCredentials: true })
+        .then((resp) => {
+          self.$nuxt.$emit(event, resp)
+        })
+        .catch((err) => {
+          self.$nuxt.$emit('error')
+          let msg = ''
+          if ('errors' in err.response.data) {
+            msg = self.errMsgGenerator(err.response.data.errors)
+          } else {
+            msg = err.response.data.message
+          }
+          self.$toast.error(msg)
+        })
+    },
     getReq (endpoint, event) {
       const self = this
-      self.$axios.get(endpoint).then(function (response) {
+      self.$axios.get(endpoint).then((response) => {
         this.$nuxt.$emit(event, response.data)
       }).catch((err) => {
-        self.$nuxt.$emit('error')
-        let msg = ''
-        msg = err.response.data.message
-        self.$toast.error(msg)
+        if (err) {
+          self.$nuxt.$emit('error')
+          let msg = ''
+          msg = err.response.data.message
+          self.$toast.error(msg)
+        }
       })
+    },
+    errMsgGenerator (errorsObject) {
+      let msg = ''
+      for (const key in errorsObject) {
+        msg += errorsObject[key] + '\n'
+      }
+      return msg
     }
   }
 }
