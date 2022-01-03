@@ -30,6 +30,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/axios.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -88,8 +89,8 @@ export default {
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    // baseUrl: 'https://api.hoo-da.ir/api/v1/',
-    baseUrl: 'http://192.168.1.189:8000/api/v1/',
+    baseUrl: 'https://api.hoo-da.ir/api/v1/',
+    // baseUrl: 'http://192.168.1.189:8000/api/v1/',
     credentials: true
   },
 

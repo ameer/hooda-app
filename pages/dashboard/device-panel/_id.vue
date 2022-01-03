@@ -18,6 +18,15 @@
           شماره سیمکارت داخل دستگاه: {{ device.sim_number }}
         </p>
       </v-col>
+      <v-col cols="12">
+        <v-switch
+          v-model="powerState"
+          inset
+
+          :color="powerState === true ? 'green' : 'red'"
+          :label="`وضعیت دستگاه: ${powerState ? 'فعال' : 'غیرفعال'}`"
+        />
+      </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -37,6 +46,7 @@ export default {
       device: {},
       deviceData: {},
       timerId: null,
+      powerState: false,
       items: [
         {
           title: 'پایش امنیت هوشمند'
@@ -72,7 +82,8 @@ export default {
   },
   mounted () {
     const self = this
-    self.timerId = setInterval(self.getDeviceData, 1000)
+    self.getDeviceData()
+    self.timerId = setInterval(self.getDeviceData, 20000)
   },
   created () {
     this.$nuxt.$on('error', () => {
