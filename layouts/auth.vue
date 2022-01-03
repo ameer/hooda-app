@@ -132,16 +132,17 @@ export default {
           self.$toast.error(msg)
         })
     },
-    async login (loginData) {
-      try {
-        await this.$auth.loginWith('local', { data: loginData })
+    login (loginData) {
+      this.$auth.loginWith('local', { data: loginData }).then((resp) => {
         this.$router.push('/dashboard')
-      } catch (err) {
-        console.log(err)
-        // this.$nuxt.$emit('error')
+        this.$toast.success(this.$auth.user.fullname + ' خوش آمدید')
+      }).catch((err) => {
+        const error = err.response
+        console.log(error)
+        this.$nuxt.$emit('error')
         // const msg = err.response.data.message
         // this.$toast.error(msg)
-      }
+      })
     },
     errMsgGenerator (errorsObject) {
       let msg = ''
