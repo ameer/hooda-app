@@ -10,7 +10,8 @@ export default {
     themes: {
       light: {
         accent: '#fbfbfd',
-        primary: '#006090'
+        primary: '#006090',
+        magicGreen: '#4caf50'
       },
       dark: {
         primary: colors.blue.darken2,

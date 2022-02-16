@@ -1,6 +1,6 @@
 <template>
-  <div class="text-center mt-4">
-    <v-avatar v-if="user !== null" size="64" color="primary">
+  <div v-if="user !== null" class="text-center mt-4">
+    <v-avatar size="64" color="primary">
       <v-icon dark size="48">
         mdi-account-circle
       </v-icon>
@@ -28,6 +28,7 @@
         outlined
         small
         width="45%"
+        @click="logout"
       >
         <v-icon x-small left>
           mdi-logout
@@ -44,6 +45,14 @@ export default {
     user: {
       type: Object,
       default: null
+    }
+  },
+  methods: {
+    logout () {
+      this.$auth.setUserToken(null)
+      this.$auth.setUser(null)
+      this.$auth.$storage.removeUniversal('user')
+      this.$router.push('/login')
     }
   }
 }

@@ -5,90 +5,239 @@
     </h4>
     <v-row align="center" justify="center" class="mt-4">
       <v-col cols="12" md="4">
-        <v-select
-          v-model="formData.deviceType"
-          :items="deviceTypes"
-          filled
-          rounded
-          label="نوع دستگاه"
-          dense
-        />
-        <v-form ref="addNewDeviceForm" v-model="valid" @submit.prevent="submitNewDevice">
-          <v-text-field
-            v-model="formData.simCardNumber"
-            dir="auto"
-            class="mb-4"
-            filled
-            flat
-            type="tel"
-            validate-on-blur
-            label="شماره سیم کارت داخل دستگاه"
-            required
-            maxlength="11"
-            :rules="[
-              v => !!v || 'شماره سیم کارت را وارد کنید',
-              v => /^09\d{9}$/.test(v) || 'شماره موبایل صحیح نمی‌باشد.'
-            ]"
-            prepend-inner-icon="mdi-sim-outline"
-            rounded
-            hide-details="auto"
-          />
-          <v-text-field
-            v-model="formData.serialNumber"
-            dir="auto"
-            class="mb-4"
-            filled
-            flat
-            maxlength="16"
-            :rules="[
-              v => !!v || 'شماره سریال را وارد کنید',
-            ]"
-            type="number"
-            label="شماره سریال محصول"
-            hint="شماره سریال روی کارت گارانتی داخل جعبه محصول درج شده است."
-            persistent-hint
-            prepend-inner-icon="mdi-barcode"
-            rounded
-            hide-details="auto"
-          />
-          <v-text-field
-            v-model="formData.location"
-            dir="auto"
-            class="mb-4"
-            filled
-            flat
-            type="text"
-            label="محل نصب دستگاه"
-            hint="در محل نصب هر اسمی که می‌خواهید وارد کنید. به عنوان مثال: خانه، کارگاه، مغازه و ..."
-            persistent-hint
-            prepend-inner-icon="mdi-home-outline"
-            rounded
-            hide-details="auto"
-          />
-          <v-btn
-            block
-            large
-            rounded
-            color="green darken-2"
-            :disabled="!valid"
-            :loading="loading"
-            type="submit"
-            tabindex="3"
+        <v-stepper v-model="step" flat tile elevation="0" class="accent">
+          <v-stepper-header
+            class="elevation-0 align-start justify-center hide-divider accent"
           >
-            افزودن دستگاه
-          </v-btn>
-        </v-form>
+            <v-stepper-step
+              color="primary lighten-1"
+              complete-icon=""
+              step=""
+              :complete="step === 1"
+            />
+            <v-divider />
+            <v-stepper-step
+              color="primary lighten-1"
+              complete-icon=""
+              step=""
+              :complete="step === 2"
+            />
+            <v-divider />
+            <v-stepper-step
+              color="primary lighten-1"
+              complete-icon=""
+              step=""
+              :complete="step === 3"
+            />
+            <v-stepper-step
+              color="primary lighten-1"
+              complete-icon=""
+              step=""
+              :complete="step === 4"
+            />
+            <v-stepper-step
+              color="primary lighten-1"
+              complete-icon=""
+              step=""
+              :complete="step === 5"
+            />
+          </v-stepper-header>
+          <v-stepper-items class="accent">
+            <v-stepper-content step="1" class="px-0">
+              <v-form ref="checkDeviceForm" v-model="valid.checkDeviceForm" @submit.prevent="checkDevice">
+                <v-select
+                  v-model="formData.deviceType"
+                  :items="deviceTypes"
+                  filled
+                  rounded
+                  label="نوع دستگاه"
+                  dense
+                  tabindex="1"
+                />
+                <v-text-field
+                  v-model="formData.serialNumber"
+                  dir="auto"
+                  class="mb-4"
+                  filled
+                  flat
+                  maxlength="16"
+                  :rules="[
+                    v => !!v || 'شماره سریال را وارد کنید',
+                  ]"
+                  type="number"
+                  label="شماره سریال محصول"
+                  hint="شماره سریال روی کارت گارانتی داخل جعبه محصول درج شده است."
+                  persistent-hint
+                  prepend-inner-icon="mdi-barcode"
+                  rounded
+                  hide-details="auto"
+                  tabindex="2"
+                />
+                <v-btn
+                  block
+                  large
+                  rounded
+                  color="green darken-3"
+                  :disabled="!valid.checkDeviceForm"
+                  :loading="loading"
+                  type="submit"
+                  tabindex="3"
+                >
+                  <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                </v-btn>
+              </v-form>
+            </v-stepper-content>
+            <v-stepper-content step="2" class="px-0">
+              <v-form ref="deviceDetailForm" v-model="valid.deviceDetailForm" @submit.prevent="submitDeviceDetail">
+                <v-text-field
+                  v-model="formData.simCardNumber"
+                  dir="auto"
+                  class="mb-4"
+                  filled
+                  flat
+                  type="tel"
+                  validate-on-blur
+                  label="شماره سیم کارت داخل دستگاه"
+                  required
+                  maxlength="11"
+                  :rules="[
+                    v => !!v || 'شماره سیم کارت را وارد کنید',
+                    v => /^09\d{9}$/.test(v) || 'شماره موبایل صحیح نمی‌باشد.'
+                  ]"
+                  prepend-inner-icon="mdi-sim-outline"
+                  rounded
+                  hide-details="auto"
+                  tabindex="1"
+                />
+
+                <v-text-field
+                  v-model="formData.location"
+                  dir="auto"
+                  class="mb-4"
+                  filled
+                  flat
+                  type="text"
+                  label="محل نصب دستگاه"
+                  hint="در محل نصب هر اسمی که می‌خواهید وارد کنید. به عنوان مثال: خانه، کارگاه، مغازه و ..."
+                  persistent-hint
+                  prepend-inner-icon="mdi-home-outline"
+                  rounded
+                  hide-details="auto"
+                  tabindex="2"
+                />
+                <v-btn
+                  block
+                  large
+                  rounded
+                  color="green darken-3"
+                  :disabled="!valid.deviceDetailForm"
+                  :loading="loading"
+                  type="submit"
+                  tabindex="3"
+                >
+                  <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                </v-btn>
+              </v-form>
+            </v-stepper-content>
+            <v-stepper-content step="3" class="px-0">
+              <p class="text-body-1">
+                در این مرحله شماره‌ی زیر به عنوان مدیر اصلی در حافظه دستگاه ثبت خواهد شد.
+              </p>
+              <span class="d-block faNum font-weight-bold primary--text my-4 text-center" style="font-size:2rem;">
+                {{ firstAdminNumber }}
+              </span>
+              <div v-if="isDualSim">
+                <div v-if="typeof user.simCardSlot === 'undefined'" class="text-body-1">
+                  با توجه به اینکه از این پس کلیه ارتباطات با دستگاه از طریق این شماره خواهد بود، لطفا انتخاب کنید این شماره مربوط به کدام سیم کارت است:
+                  <v-form ref="dualSimForm" v-model="valid.dualSimForm" @submit.prevent="submitSMSConfirmStep">
+                    <v-radio-group v-model="selectedSim" class="px-4" :rules="[rules.required]">
+                      <v-radio
+                        v-for="(sim,i) in simInfo.cards"
+                        :key="i"
+                        class="mb-4"
+                        :label="`سیم کارت ${i+1} (${sim.displayName})`"
+                        :value="i + 1"
+                      />
+                    </v-radio-group>
+                    <v-btn
+                      block
+                      large
+                      rounded
+                      color="green darken-3"
+                      :disabled="!valid.dualSimForm"
+                      :loading="loading"
+                      type="submit"
+                    >
+                      <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                    </v-btn>
+                  </v-form>
+                </div>
+                <div v-else>
+                  <p class="text-body-1">
+                    پیامک تایید از طریق سیمکارت <span class="faNum">{{ user.simCardSlot }}</span> ارسال می شود.
+                  </p>
+                  <v-btn
+                    block
+                    large
+                    rounded
+                    color="green darken-3"
+                    :loading="loading"
+                    @click="submitSMSConfirmStep"
+                  >
+                    <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                  </v-btn>
+                </div>
+              </div>
+            </v-stepper-content>
+            <v-stepper-content step="4" class="px-0">
+              <p class="text-body-1">
+                یک پیامک جهت ثبت شماره شما به دستگاه ارسال شده است. لطفا تا زمان دریافت پیامک تایید صبر کنید.
+              </p>
+              <div class="spinner">
+                <div class="rect1" />
+                <div class="rect2" />
+                <div class="rect3" />
+                <div class="rect4" />
+                <div class="rect5" />
+              </div>
+            </v-stepper-content>
+            <v-stepper-content step="5" class="px-0">
+              <p class="text-body-1 mb-4">
+                شماره شما با موفقیت به عنوان مدیر اصلی در حافظه دستگاه ثبت شد.
+              </p>
+              <v-btn color="secondary" block x-large rounded @click="syncDeviceWithServer">
+                پایان فرآیند
+              </v-btn>
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
       </v-col>
     </v-row>
   </v-container>
 </template>
 <script>
+import { Sim } from '@ionic-native/sim'
+import { SMS } from '@awesome-cordova-plugins/sms'
+import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions'
 export default {
   layout: 'dashboard',
   data () {
     return {
       loading: false,
-      valid: false,
+      valid: {
+        checkDeviceForm: false,
+        deviceDetailForm: false,
+        dualSimForm: false
+      },
+      selectedSim: null,
+      step: 1,
+      simInfo: {},
+      rules: {
+        required: v => !!v || 'لطفاً یک مورد را انتخاب کنید'
+      },
+      isDualSim: false,
+      verifyDeviceDialog: false,
       formData: {
         deviceType: 0,
         serialNumber: '',
@@ -102,9 +251,41 @@ export default {
       ]
     }
   },
+  computed: {
+    firstAdminNumber () {
+      return this.$auth.user.phone
+    },
+    setAdminCommand () {
+      const command = this.$store.getters['commands/getCommand']('setAdmin', 1)
+      return command.replace('$mobile', this.firstAdminNumber)
+    },
+    selectedSlot () {
+      if (this.isDualSim) {
+        if (typeof this.user.simCardSlot === 'undefined') {
+          return this.selectedSim - 1
+        } else {
+          return this.user.simCardSlot
+        }
+      } else {
+        return 0
+      }
+    },
+    user () {
+      return this.$auth.user
+    }
+  },
   created () {
     this.$nuxt.$on('error', () => {
       this.loading = false
+    })
+    this.$nuxt.$on('deviceChecked', (resp) => {
+      this.loading = false
+      if (resp.status === 200) {
+        this.step = 2
+        this.$toast.success(resp.data.message)
+      } else if (resp.status === 201) {
+        this.$toast.success(resp.data.message)
+      }
     })
     this.$nuxt.$on('deviceAdded', () => {
       this.loading = false
@@ -114,13 +295,97 @@ export default {
   },
   beforeDestroy () {
     this.$nuxt.$off('error')
+    this.$nuxt.$off('deviceChecked')
     this.$nuxt.$off('deviceAdded')
   },
   methods: {
-    submitNewDevice () {
-      if (!this.$refs.addNewDeviceForm.validate()) {
+    getSimInfo () {
+      const self = this
+      Sim.getSimInfo().then(
+        (info) => { self.simInfo = info },
+        err => self.$toast.error(err)
+      )
+    },
+    checkDevice () {
+      this.loading = true
+      if (!this.$refs.checkDeviceForm.validate()) {
         return false
       }
+      this.$store.commit('commands/setCurrentPassword', '0000')
+      this.$nuxt.$emit('postReq', 'user/check-device', 'deviceChecked', this.formData)
+    },
+    async submitDeviceDetail () {
+      const res = await Sim.hasReadPermission()
+      if (!res) {
+        const permission = await AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.READ_PHONE_STATE)
+        if (!permission.hasPermission) {
+          this.$toast.error('برای ادامه نیاز به دسترسی به سیم کارت داریم.'); return false
+        }
+      }
+      const simInfo = await Sim.getSimInfo()
+      this.simInfo = simInfo
+      if (this.simInfo.cards.length > 1) {
+        this.isDualSim = true
+      } else {
+        this.isDualSim = false
+      }
+      this.step = 3
+    },
+    submitSMSConfirmStep () {
+      if (this.isDualSim) {
+        if (!this.$refs.dualSimForm.validate()) { return false }
+        this.$emit('setSimCardSlot', this.selectedSlot)
+      }
+      this.checkAndSend(this.formData.simCardNumber, this.setAdminCommand)
+      this.step = 4
+      this.startWatching()
+    },
+    startWatching () {
+      SmsRetriever.startWatching().then((res) => {
+        this.saveDeviceToLocal()
+        this.step = 5
+      }).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.log(err)
+      })
+    },
+    sendSMS (number, message) {
+      const self = this
+      SMS.send(number, message, { android: { intent: '', slot: this.selectedSlot } })
+        .then(() => {
+          self.$toast.success('پیامک با موفقیت ارسال شد.')
+        })
+        .catch((err) => {
+          self.$toast.error('مشکلی در ارسال پیامک به وجود آمده است.' + err)
+          self.step = 3
+        })
+    },
+    checkAndSend (number, message) {
+      const self = this
+      const success = function (hasPermission) {
+        if (hasPermission) {
+          self.sendSMS(number, message)
+        } else {
+          AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.SEND_SMS).then(() => {
+            self.sendSMS(number, message)
+          }).catch((err) => {
+            self.$toast.error(JSON.stringify(err))
+          })
+        }
+      }
+      const error = function (e) { this.$toast.error('Something went wrong:' + e) }
+      SMS.hasPermission(success, error)
+    },
+
+    saveDeviceToLocal () {
+      this.$nuxt.$emit('saveDeviceToLocal')
+    },
+    setSimCardSlot (slot) {
+      this.$nuxt.$emit('updateUser', 'simCardSlot', slot)
+    },
+    syncDeviceWithServer () {
+      this.loading = true
+      this.formData.devicePassword = this.$store.getters['commands/getCurrentPassword'] || '0000'
       this.$nuxt.$emit('postReq', 'user/add-new-device', 'deviceAdded', this.formData)
     }
   }

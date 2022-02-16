@@ -1,7 +1,9 @@
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
-
+  // router: {
+  //   middleware: ['authenticated']
+  // },
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
@@ -30,7 +32,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/axios.js'
+    '~/plugins/axios.js',
+    '~/plugins/capacitorApp'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -59,10 +62,12 @@ export default {
     strategies: {
       local: {
         token: {
-          property: 'access_token'
+          property: 'token',
+          maxAge: 15778463
         },
         user: {
-          property: false
+          property: 'user',
+          autoFetch: false
         },
         endpoints: {
           // (optional) If set, we send a get request to this endpoint before login
@@ -71,7 +76,7 @@ export default {
           },
           login: { url: 'auth/login', method: 'post', withCredentials: true },
           logout: { url: 'auth/logout', method: 'post', withCredentials: true },
-          user: { url: 'user/profile', method: 'get' }
+          user: false
         }
       }
     }
@@ -89,8 +94,8 @@ export default {
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseUrl: 'https://api.hoo-da.ir/api/v1/',
-    // baseUrl: 'http://192.168.1.189:8000/api/v1/',
+    // baseUrl: 'https://api.hoo-da.ir/api/v1/',
+    baseUrl: 'http://192.168.1.189:8000/api/v1/',
     credentials: true
   },
 

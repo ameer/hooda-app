@@ -73,6 +73,7 @@
 
 <script>
 export default {
+  middleware: ['authenticated'],
   data () {
     return {
       clipped: false,
@@ -133,15 +134,20 @@ export default {
         })
     },
     login (loginData) {
-      this.$auth.loginWith('local', { data: loginData }).then((resp) => {
+      this.$auth.loginWith('local', { data: loginData, timeout: 10000 }).then((resp) => {
+        this.$auth.setUserToken(resp.data.token)
+        this.$auth.setUser(resp.data.user)
+        this.$auth.$storage.setUniversal('user', this.$auth.user)
         this.$router.push('/dashboard')
-        this.$toast.success(this.$auth.user.fullname + ' خوش آمدید')
-      }).catch((err) => {
-        const error = err.response
-        console.log(error)
+        this.$nuxt.$emit('userLoggedIn')
+      }).catch((error) => {
         this.$nuxt.$emit('error')
-        // const msg = err.response.data.message
-        // this.$toast.error(msg)
+        if (!error.response) {
+          // network error
+          this.$toast.error('خطا در اتصال به سرور. لطفا از اتصال خود به اینترنت مطمئن شوید')
+        } else {
+          this.$toast.error(error.response.data.message)
+        }
       })
     },
     errMsgGenerator (errorsObject) {

@@ -388,38 +388,5 @@ export default {
 </script>
 
 <style>
-.v-stepper__header {
-  height: 32px !important;
-}
-.hide-divider hr {
-  display: none;
-}
-.v-stepper__step__step {
-  height: 10px !important;
-  min-width: 10px !important;
-  width: 10px !important;
-}
-.v-stepper__step {
-  padding: 10px !important;
-}
-.otp-form {
-  direction: ltr;
-}
-.otp-form input.otp-input {
-  background-color: rgb(156 156 157 / 12%);
-  border: 1px solid rgb(255 255 255 / 40%);
-  width: 4rem;
-  height: 4rem;
-  border-radius: 1rem;
-  color: rgb(156 156 157);
-  text-align: center;
-  font-size: 2.5rem;
-  outline: none !important;
-  transition: all 0.3s ease-in-out;
-}
-.otp-form input.otp-input:focus,
-input.otp-input:focus-visible {
-  border: 2px solid rgb(156 156 157 / 80%);
-  background-color: rgb(156 156 157 / 45%);
-}
+
 </style>

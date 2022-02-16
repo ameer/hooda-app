@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app light>
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
@@ -41,6 +41,7 @@
         v-text="title"
       />
       <v-spacer />
+      <online-indicator />
       <v-btn
         elevation="0"
         small
@@ -74,10 +75,13 @@
 </template>
 
 <script>
+import { Storage } from '@capacitor/storage'
+import OnlineIndicator from '~/components/onlineIndicator.vue'
 import userAvatar from '~/components/userAvatar.vue'
 export default {
-  components: { userAvatar },
-  middleware: 'auth',
+  components: { userAvatar, OnlineIndicator },
+  auth: false,
+  middleware: 'authenticated',
   data () {
     return {
       clipped: false,
@@ -121,13 +125,25 @@ export default {
       return this.$auth.user
     }
   },
+  async mounted () {
+    const devices = await this.getDataFromLocal('devices')
+    this.$store.commit('setDevices', devices)
+  },
   created () {
     this.$nuxt.$on('getReq', this.getReq)
     this.$nuxt.$on('postReq', this.postReq)
+    this.$nuxt.$on('saveDataToLocal', this.saveDataToLocal)
+    this.$nuxt.$on('getDataFromLocal', this.getDataFromLocal)
+    this.$nuxt.$on('removeDataFromLocal', this.removeDataFromLocal)
+    this.$nuxt.$on('updateUser', this.updateUser)
   },
   beforeDestroy () {
     this.$nuxt.$off('getReq', this.getReq)
     this.$nuxt.$off('postReq', this.postReq)
+    this.$nuxt.$off('saveDataToLocal', this.saveDataToLocal)
+    this.$nuxt.$off('getDataFromLocal', this.getDataFromLocal)
+    this.$nuxt.$off('removeDataFromLocal', this.removeDataFromLocal)
+    this.$nuxt.$off('updateUser', this.updateUser)
   },
   methods: {
     goBack () {
@@ -151,18 +167,23 @@ export default {
           self.$toast.error(msg)
         })
     },
-    getReq (endpoint, event) {
-      const self = this
-      self.$axios.get(endpoint).then((response) => {
-        this.$nuxt.$emit(event, response.data)
-      }).catch((err) => {
-        if (err) {
-          self.$nuxt.$emit('error')
-          let msg = ''
-          msg = err.response.data.message
-          self.$toast.error(msg)
-        }
-      })
+    getReq (endpoint, event, options = { saveToLocal: false, saveToLocalKey: null }) {
+      this.$axios
+        .get(endpoint)
+        .then((response) => {
+          if (options.saveToLocal) {
+            this.saveDataToLocal(options.saveToLocalKey, response.data)
+          }
+          this.$nuxt.$emit(event, response.data)
+        })
+        .catch((err) => {
+          if (err) {
+            this.$nuxt.$emit('error')
+            let msg = ''
+            msg = err.response.data.message
+            this.$toast.error(msg)
+          }
+        })
     },
     errMsgGenerator (errorsObject) {
       let msg = ''
@@ -170,6 +191,47 @@ export default {
         msg += errorsObject[key] + '\n'
       }
       return msg
+    },
+    updateUser (key, value) {
+      const user = { ...this.$auth.user }
+      user[key] = value
+      this.$auth.setUser(user)
+    },
+    saveDeviceToLocal (device) {
+      const devices = this.$store.state.devices
+      devices.push(device)
+      this.saveDataToLocal('devices', devices)
+      this.$store.commit('setDevices', devices)
+    },
+    /*
+    * Save data to capacitor storage
+    * @param {string} key
+    * @param {Object} value
+    */
+    async saveDataToLocal (key, value) {
+      await Storage.set({
+        key,
+        value: JSON.stringify(value)
+      })
+    },
+    /*
+    * Get data from capacitor storage
+    * @param {string} key
+    * @return {Object} value
+    */
+    async getDataFromLocal (key, event = null) {
+      const { value } = await Storage.get({ key })
+      if (event) {
+        this.$nuxt.$emit(event, JSON.parse(value))
+      }
+      return JSON.parse(value)
+    },
+    /*
+    * Remove data from capacitor storage
+    * @param {string} key
+    */
+    async removeDataFromLocal (key) {
+      await Storage.remove({ key })
     }
   }
 }

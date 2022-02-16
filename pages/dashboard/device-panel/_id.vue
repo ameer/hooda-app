@@ -21,44 +21,37 @@
       </v-card-text>
     </v-card>
     <v-card class="mb-4">
+      <v-card-title>
+        پنل فرمان دستگاه
+      </v-card-title>
       <v-card-text class="py-0 px-4">
-        <v-row align="center" no-gutters>
-          <v-col cols="12">
-            <v-switch
-              v-model="powerState"
-              inset
-              hide-details="auto"
-              :color="powerState === true ? 'green' : 'red'"
-              :label="`وضعیت دستگاه: ${powerState ? 'فعال' : 'غیرفعال'}`"
-            />
-          </v-col>
-          <v-col cols="6" class="d-flex align-center">
-            <span class="mb-0 text-body-2 ml-4">
-              شارژ باتری:
-            </span>
-            <battery-indicator :battery-charge="batteryCharge" />
-          </v-col>
-          <v-col cols="6" />
-        </v-row>
+        <v-btn
+          v-for="(command, i) in commands"
+          :key="`command-${i}`"
+          color="primary"
+          block
+          class="mb-4"
+          @click="runCommand(command.value)"
+        >
+          {{ command.name }}
+        </v-btn>
       </v-card-text>
     </v-card>
-
-    <v-row>
-      <v-col cols="12">
-        <gauge :digit="temperature" />
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 <script>
-import BatteryIndicator from '~/components/batteryIndicator.vue'
-import gauge from '~/components/gauge.vue'
+// import BatteryIndicator from '~/components/batteryIndicator.vue'
+// import gauge from '~/components/gauge.vue'
+import { SMS } from '@awesome-cordova-plugins/sms'
+import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions'
 export default {
-  components: { gauge, BatteryIndicator },
+  // components: { gauge, BatteryIndicator },
   layout: 'dashboard',
   data () {
     return {
       loading: false,
+      commands: [],
       device: {},
       deviceData: {},
       timerId: null,
@@ -104,9 +97,10 @@ export default {
     }
   },
   mounted () {
-    const self = this
-    self.getDeviceData()
-    self.timerId = setInterval(self.getDeviceData, 20000)
+    // const self = this
+    // self.getDeviceData()
+    // self.timerId = setInterval(self.getDeviceData, 20000)
+    this.commands = this.$store.getters['commands/getUserCommands']()
   },
   created () {
     this.$nuxt.$on('error', () => {
@@ -129,6 +123,44 @@ export default {
   methods: {
     getDeviceData () {
       this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}/data`, 'deviceDataRecieved')
+    },
+    runCommand (command) {
+      this.checkAndSend('09058263061', command)
+      this.startWatching()
+    },
+    startWatching () {
+      SmsRetriever.startWatching().then((res) => {
+        alert(res.Message)
+      }).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.log(err)
+      })
+    },
+    sendSMS (number, message) {
+      const self = this
+      SMS.send(number, message, { android: { intent: '', slot: 1 } })
+        .then(() => {
+          self.$toast.success('پیامک با موفقیت ارسال شد.')
+        })
+        .catch((err) => {
+          self.$toast.error('مشکلی در ارسال پیامک به وجود آمده است.' + err)
+        })
+    },
+    checkAndSend (number, message) {
+      const self = this
+      const success = function (hasPermission) {
+        if (hasPermission) {
+          self.sendSMS(number, message)
+        } else {
+          AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.SEND_SMS).then(() => {
+            self.sendSMS(number, message)
+          }).catch((err) => {
+            self.$toast.error(JSON.stringify(err))
+          })
+        }
+      }
+      const error = function (e) { this.$toast.error('Something went wrong:' + e) }
+      SMS.hasPermission(success, error)
     }
   }
 }
