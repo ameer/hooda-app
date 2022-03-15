@@ -1,1 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 362.66 339.92"><g id="e5e81db5-5379-42c9-abfb-f754a6655209" data-name="Layer 2"><g id="a5be1cf7-ddda-47f0-8a45-df7e2bb246d5" data-name="Layer 1"><path d="M171.55,86.41,100.87,310.88a162.71,162.71,0,0,1,0-281.8" fill="none" stroke="#006090" stroke-miterlimit="10" stroke-width="39"/><circle cx="172.44" cy="85.07" r="16.89" fill="#fff" stroke="#006090" stroke-miterlimit="10" stroke-width="5.33"/><circle cx="102.2" cy="28.62" r="16.89" fill="#fff" stroke="#006090" stroke-miterlimit="10" stroke-width="5.33"/><path d="M191.1,253.55,261.78,29a162.69,162.69,0,0,1,0,281.8M145.23,170H216" fill="none" stroke="#006090" stroke-miterlimit="10" stroke-width="39"/><circle cx="192.22" cy="250.55" r="16.89" fill="#fff" stroke="#006090" stroke-miterlimit="10" stroke-width="5.33"/><circle cx="262.23" cy="311.34" r="16.89" transform="matrix(0.07, -1, 1, 0.07, -66.91, 550.84)" fill="#fff" stroke="#006090" stroke-miterlimit="10" stroke-width="5.33"/></g></g></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 362.7 339.9" style="enable-background:new 0 0 362.7 339.9;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#006090;stroke-width:39;stroke-miterlimit:10;}
+	.st1{fill:#FFFFFF;stroke:#006090;stroke-width:5.33;stroke-miterlimit:10;}
+</style>
+<path class="st0" d="M171.6,86.4l-70.7,224.5C23.1,265.9-3.6,166.4,41.3,88.6c14.3-24.7,34.8-45.2,59.5-59.5"/>
+<circle class="st1" cx="172.4" cy="85.1" r="16.9"/>
+<circle class="st1" cx="102.2" cy="28.6" r="16.9"/>
+<path class="st0" d="M191.1,253.6L261.8,29c77.8,44.9,104.5,144.4,59.6,222.2c-14.3,24.7-34.8,45.3-59.6,59.6"/>
+<line class="st0" x1="145.2" y1="170" x2="216" y2="170"/>
+<circle class="st1" cx="192.2" cy="250.6" r="16.9"/>
+<circle class="st1" cx="262.8" cy="310.4" r="16.9"/>
+</svg>

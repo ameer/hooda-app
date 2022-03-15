@@ -9,7 +9,7 @@ export default {
     dark: false,
     themes: {
       light: {
-        accent: '#fbfbfd',
+        accent: '#f5f5f6',
         primary: '#006090',
         magicGreen: '#4caf50'
       },

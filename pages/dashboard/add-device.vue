@@ -152,10 +152,10 @@
                   <v-form ref="dualSimForm" v-model="valid.dualSimForm" @submit.prevent="submitSMSConfirmStep">
                     <v-radio-group v-model="selectedSim" class="px-4" :rules="[rules.required]">
                       <v-radio
-                        v-for="(sim,i) in simInfo.cards"
+                        v-for="(sim,i) in simInfo.activeSubscriptionInfoCount"
                         :key="i"
                         class="mb-4"
-                        :label="`سیم کارت ${i+1} (${sim.displayName})`"
+                        :label="`سیم کارت ${i+1} ${sim.displayName ? '('+sim.displayName+')' : ''}`"
                         :value="i + 1"
                       />
                     </v-radio-group>
@@ -324,7 +324,7 @@ export default {
       }
       const simInfo = await Sim.getSimInfo()
       this.simInfo = simInfo
-      if (this.simInfo.cards.length > 1) {
+      if (this.simInfo.phoneCount > 1 && this.simInfo.activeSubscriptionInfoCount > 1) {
         this.isDualSim = true
       } else {
         this.isDualSim = false

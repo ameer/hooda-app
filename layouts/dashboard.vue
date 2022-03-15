@@ -42,29 +42,52 @@
       />
       <v-spacer />
       <online-indicator />
-      <v-btn
-        elevation="0"
-        small
-        fab
-        color="accent"
-        nuxt
-        to="/dashboard/"
-      >
-        <v-icon color="primary">
-          mdi-home-outline
-        </v-icon>
-      </v-btn>
       <v-btn elevation="0" small fab color="accent" @click="goBack">
         <v-icon color="primary">
           mdi-arrow-u-left-bottom
         </v-icon>
       </v-btn>
     </v-app-bar>
-    <v-main class="accent">
+    <v-main class="accent mb-8">
       <v-container class="h-100">
         <Nuxt />
       </v-container>
     </v-main>
+    <v-bottom-navigation
+      :class="isKeyboardShown ? 'keyboard-open' : ''"
+      app
+      color="primary"
+      grow
+      height="64"
+    >
+      <v-btn
+        nuxt
+        to="/dashboard/"
+        exact
+      >
+        <v-icon large>
+          mdi-home-outline
+        </v-icon>
+      </v-btn>
+
+      <v-btn
+        color="green"
+        fab
+        class="fab"
+        to="/dashboard/add-device"
+        nuxt
+      >
+        <v-icon color="white">
+          mdi-plus
+        </v-icon>
+      </v-btn>
+
+      <v-btn>
+        <v-icon large>
+          mdi-account-outline
+        </v-icon>
+      </v-btn>
+    </v-bottom-navigation>
     <!-- <v-footer
       :absolute="!fixed"
       app
@@ -123,6 +146,9 @@ export default {
   computed: {
     user () {
       return this.$auth.user
+    },
+    isKeyboardShown () {
+      return this.$store.state.isKeyboardShown
     }
   },
   async mounted () {

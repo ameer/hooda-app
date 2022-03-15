@@ -3,7 +3,7 @@
     <v-card>
       <v-card-text class="px-4 mb-4">
         <v-row align="center">
-          <v-col v-if="Object.keys(device).length > 0" cols="12">
+          <v-col v-if="device !== null" cols="12">
             <p class="text--primary mb-1">
               {{ deviceName }}
               <span class="text--secondary font-weight-light">
@@ -71,7 +71,10 @@ export default {
   },
   fetch () {
     this.loading = true
-    this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}`, 'deviceRecieved')
+    this.device = this.$store.state.selectedDevice
+    if (this.device === null && this.$store.state.onlineStatus) {
+      this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}`, 'deviceRecieved')
+    }
   },
   computed: {
     deviceName () {

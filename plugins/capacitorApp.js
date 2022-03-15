@@ -1,5 +1,6 @@
 import { App } from '@capacitor/app'
 import { Toast } from '@capacitor/toast'
+import { Keyboard } from '@capacitor/keyboard'
 export default function ({ app, store }) {
   let counter = 0
   store.commit('changeOnlineStatus', navigator.onLine)
@@ -15,10 +16,15 @@ export default function ({ app, store }) {
       store.commit('changeOnlineStatus', true)
     }
   )
+  Keyboard.addListener('keyboardWillShow', () => {
+    store.commit('setKeyboardShown', true)
+  })
+  Keyboard.addListener('keyboardDidHide', () => {
+    store.commit('setKeyboardShown', false)
+  })
   App.addListener('backButton', async () => {
     if (app.router.currentRoute.path === '/') {
-    //   App.exitApp()
-      alert('exit')
+      App.exitApp()
     }
     if (counter === 0) {
       counter++
@@ -34,8 +40,7 @@ export default function ({ app, store }) {
       await Toast.show({ text: 'برای خروج دوباره دکمه بازگشت را بزنید!' })
     } else {
       counter = 0
-      //   App.exitApp()
-      alert('exit')
+      App.exitApp()
     }
   })
 }
