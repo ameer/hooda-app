@@ -31,7 +31,7 @@ export default function ({ app, store }) {
       setTimeout(() => {
         counter = 0
       }, 2500)
-      app.router.go(-1)
+      app.router.back()
     } else if (counter === 1 && app.router.currentRoute.path !== '/') {
       counter++
       setTimeout(() => {

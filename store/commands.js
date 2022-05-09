@@ -1,14 +1,14 @@
 export const state = () => ({
   currentPassword: '0000',
   setAdmin: '$currentPassword hooda admin $adminIndex $mobile',
-  resetFactory: '$currentPassword freset',
   activateAntiTheft: '$currentPassword on',
   deactivateAntiTheft: '$currentPassword off',
-  changeDevicePassword: '$currentPassword $newPassword $currentPassword',
+  getTemperature: '$currentPassword temp',
   simCardCredit: '$currentPassword credit',
   deviceAntenQuality: '$currentPassword antenna',
-  getTemperature: '$currentPassword temp',
-  getAdminList: '$currentPassword radmin'
+  getAdminList: '$currentPassword radmin',
+  resetFactory: '$currentPassword freset',
+  changeDevicePassword: '$currentPassword $newPassword $currentPassword'
 })
 export const mutations = {
   setCurrentPassword (state, password) {
@@ -17,7 +17,7 @@ export const mutations = {
 }
 export const getters = {
   getCommand: state => (command, adminIndex = 1) => {
-    let commandString = (state[command]).replace('$currentPassword', state.currentPassword)
+    let commandString = (state[command]).replaceAll('$currentPassword', state.currentPassword)
     if (command === 'setAdmin') {
       commandString = commandString.replace('$adminIndex', adminIndex)
     }

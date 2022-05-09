@@ -160,6 +160,7 @@ export default {
     this.$nuxt.$on('postReq', this.postReq)
     this.$nuxt.$on('saveDataToLocal', this.saveDataToLocal)
     this.$nuxt.$on('getDataFromLocal', this.getDataFromLocal)
+    this.$nuxt.$on('getDeviceById', this.getDeviceById)
     this.$nuxt.$on('removeDataFromLocal', this.removeDataFromLocal)
     this.$nuxt.$on('updateUser', this.updateUser)
   },
@@ -168,12 +169,13 @@ export default {
     this.$nuxt.$off('postReq', this.postReq)
     this.$nuxt.$off('saveDataToLocal', this.saveDataToLocal)
     this.$nuxt.$off('getDataFromLocal', this.getDataFromLocal)
+    this.$nuxt.$off('getDeviceById', this.getDeviceById)
     this.$nuxt.$off('removeDataFromLocal', this.removeDataFromLocal)
     this.$nuxt.$off('updateUser', this.updateUser)
   },
   methods: {
     goBack () {
-      this.$router.go(-1)
+      this.$router.back()
     },
     postReq (endpoint, event, data) {
       const self = this
@@ -203,11 +205,12 @@ export default {
           this.$nuxt.$emit(event, response.data)
         })
         .catch((err) => {
-          if (err) {
-            this.$nuxt.$emit('error')
-            let msg = ''
-            msg = err.response.data.message
+          this.$nuxt.$emit('error')
+          if (err.response) {
+            const msg = err.response.data.message
             this.$toast.error(msg)
+          } else {
+            this.$toast.error('خطا در ارتباط با سرور. لطفا دوباره تلاش کنید.')
           }
         })
     },
@@ -252,6 +255,16 @@ export default {
       }
       return JSON.parse(value)
     },
+
+    async getDeviceById (id, event = null) {
+      const devices = await this.getDataFromLocal('devices')
+      const device = devices.find(device => device.id === id)
+      if (event) {
+        this.$nuxt.$emit(event, { data: device })
+      }
+      return device
+    },
+
     /*
     * Remove data from capacitor storage
     * @param {string} key

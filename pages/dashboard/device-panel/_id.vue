@@ -1,42 +1,29 @@
 <template>
   <v-container class="h-100 px-0">
-    <v-card>
-      <v-card-text class="px-4 mb-4">
-        <v-row align="center">
-          <v-col v-if="device !== null" cols="12">
-            <p class="text--primary mb-1">
-              {{ deviceName }}
-              <span class="text--secondary font-weight-light">
-                {{ device.location ? device.location : 'محل نصب نامشخص' }}
-              </span>
-            </p>
-            <p class="text--primary mb-1">
-              <span class="text--secondary font-weight-light">
-                شماره سیمکارت داخل دستگاه:
-              </span>
-              {{ device.sim_number }}
-            </p>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-    <v-card class="mb-4">
-      <v-card-title>
-        پنل فرمان دستگاه
-      </v-card-title>
-      <v-card-text class="py-0 px-4">
-        <v-btn
-          v-for="(command, i) in commands"
-          :key="`command-${i}`"
-          color="primary"
-          block
-          class="mb-4"
-          @click="runCommand(command.value)"
-        >
-          {{ command.name }}
-        </v-btn>
-      </v-card-text>
-    </v-card>
+    <device-card :device="device" :i="-1" />
+    <transition-group
+      name="slide-in"
+      tag="div"
+      class="row mt-4 align-stretch"
+      :style="{ '--total': commands.length }"
+    >
+      <v-col
+        v-for="(command, i) in commands"
+        :key="`command-${i}`"
+        cols="6"
+        :style="{'--i': i}"
+        @click="runCommand($store.getters['commands/getCommand'](command.name))"
+      >
+        <v-card class="main-box-shadow h-100" rounded="xl" min-height="163px">
+          <div class="pt-4">
+            <v-img :src="`/svg/commands-icons/${command.name}.svg`" contain max-height="85px" />
+          </div>
+          <v-card-text class="text-center">
+            <span class="text-body-1 font-weight-bold">{{ $store.getters['i18n/getTranslate'](command.name) }}</span>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </transition-group>
   </v-container>
 </template>
 <script>
@@ -45,7 +32,9 @@
 import { SMS } from '@awesome-cordova-plugins/sms'
 import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions'
+import deviceCard from '~/components/deviceCard.vue'
 export default {
+  components: { deviceCard },
   // components: { gauge, BatteryIndicator },
   layout: 'dashboard',
   data () {
@@ -69,11 +58,9 @@ export default {
       ]
     }
   },
-  fetch () {
-    this.loading = true
-    this.device = this.$store.state.selectedDevice
-    if (this.device === null && this.$store.state.onlineStatus) {
-      this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}`, 'deviceRecieved')
+  head () {
+    return {
+      title: 'پنل دستگاه'
     }
   },
   computed: {
@@ -104,6 +91,11 @@ export default {
     // self.getDeviceData()
     // self.timerId = setInterval(self.getDeviceData, 20000)
     this.commands = this.$store.getters['commands/getUserCommands']()
+    this.$nuxt.$emit('getDeviceById', parseInt(this.$route.params.id), 'deviceRecieved')
+    this.loading = true
+    if ((this.device === null || this.device === undefined) && this.$store.state.onlineStatus) {
+      this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}`, 'deviceRecieved')
+    }
   },
   created () {
     this.$nuxt.$on('error', () => {
@@ -128,7 +120,7 @@ export default {
       this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}/data`, 'deviceDataRecieved')
     },
     runCommand (command) {
-      this.checkAndSend('09058263061', command)
+      this.checkAndSend('09912509160', command)
       this.startWatching()
     },
     startWatching () {
@@ -165,6 +157,7 @@ export default {
       const error = function (e) { this.$toast.error('Something went wrong:' + e) }
       SMS.hasPermission(success, error)
     }
+
   }
 }
 </script>

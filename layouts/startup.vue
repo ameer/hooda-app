@@ -26,9 +26,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-main class="primary">
-      <v-container>
-        <Nuxt />
-      </v-container>
+      <Nuxt />
     </v-main>
     <!-- <v-footer
       :absolute="!fixed"

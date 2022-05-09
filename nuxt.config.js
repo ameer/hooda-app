@@ -9,8 +9,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - app',
-    title: 'هودا',
+    titleTemplate: '%s - هودا',
+    title: 'اپلیکیشن',
     htmlAttrs: {
       lang: 'en'
     },
@@ -32,7 +32,6 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/axios.js',
     '~/plugins/capacitorApp'
   ],
 
@@ -54,9 +53,10 @@ export default {
     'vue-toastification/nuxt'
   ],
   auth: {
+    plugins: ['~/plugins/axios'],
     redirect: {
       login: '/auth/login',
-      logout: '/',
+      logout: '/auth/login',
       home: '/dashboard/'
     },
     strategies: {
@@ -95,7 +95,8 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // baseUrl: 'https://api.hoo-da.ir/api/v1/',
-    baseUrl: 'http://192.168.1.189:8000/api/v1/',
+    // baseUrl: 'http://192.168.1.189:8000/api/v1/',
+    baseUrl: 'http://192.168.42.182:8000/api/v1/',
     credentials: true
   },
 

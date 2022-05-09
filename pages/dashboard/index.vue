@@ -1,111 +1,78 @@
 <template>
   <v-container class="h-100 pa-0">
-    <div class="text-h5 font-weight-bold text--secondary my-4 text-center">
+    <div class="text-h5 font-weight-bold text--secondary mt-4 mb-2 text-center">
       دستگاه‌های من
     </div>
-    <v-row v-if="typeof devices === 'object' && devices.length > 0" align="start" justify="start" class="mt-4">
+    <transition name="fade-transition">
+      <div v-show="offlineDataWarning" class="orange--text text--accent-4 text-center">
+        <span style="vertical-align:top;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z" /><path fill="#FF6D00" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-5h2v2h-2v-2zm0-8h2v6h-2V7z" /></svg></span>
+        فهرست دستگاه‌ها بروز نیست.
+      </div>
+    </transition>
+    <transition-group
+      name="slide-in"
+      tag="div"
+      class="row mt-4 align-start justify-start"
+      :style="{ '--total': devices.length }"
+    >
       <v-col
         v-for="(device, i) in devices"
-        :key="i"
+        :key="`device-${i}`"
         cols="12"
-        sm="6"
-        md="4"
+        :style="{'--i': i}"
       >
-        <v-card
-          rounded="lg"
-        >
-          <v-card-text>
-            <div class="text--secondary text--darken-1 text-body-1 text-center font-weight-bold mb-2">
-              پایش امنیت هوشمند <span class="faNum">#{{ i+1 }}</span>
-            </div>
-            <v-row align="center">
-              <v-col cols="6">
-                <div class="text-center my-3">
-                  <v-icon left color="accent darken-2">
-                    mdi-map-marker-outline
-                  </v-icon>
-                  <div class="mt-2 font-weight-bold text-truncate">
-                    {{ device.location }}
-                  </div>
-                </div>
-              </v-col>
-              <v-divider vertical inset />
-              <v-col cols="6">
-                <div class="text-center">
-                  <v-icon left color="accent darken-2">
-                    mdi-sim-outline
-                  </v-icon>
-                  <div class="mt-2 faNum font-weight-bold">
-                    {{ device.sim_number }}
-                  </div>
-                </div>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions class="grey lighten-3">
-            <v-btn
-              color="primary"
-              max-width="320px"
-              class="mx-auto"
-              outlined
-              @click.prevent="setSelectedDevice(i, `/dashboard/device-panel/${device.id}`)"
-            >
-              <v-icon left>
-                mdi-tune-vertical
-              </v-icon>
-              <span class="font-weight-bold text-body-2">پنل دستگاه</span>
-            </v-btn>
-            <v-spacer />
-            <v-btn icon>
-              <v-icon>
-                mdi-square-edit-outline
-              </v-icon>
-            </v-btn>
-          </v-card-actions>
-          <!-- <v-card-title class="flex-column">
-            <v-icon x-large color="primary lighten-2">
-              mdi-shield-lock-outline
-            </v-icon>
-            <p class="text--primary mt-2 text-center">
-              {{ device.location }}
-            </p>
-            <v-card-subtitle style="word-break: initial !important;">
-              {{ deviceName[device.type] }}
-            </v-card-subtitle>
-          </v-card-title> -->
-        </v-card>
+        <device-card :device="device" :i="i" />
       </v-col>
-    </v-row>
-    <div v-else>
+    </transition-group>
+    <div v-if="!devices.length > 0">
       <p class="text-center">
-        .دستگاهی برای نمایش وجود ندارد.
-        برای افزودن دستگاه از دکمه + در پایین صفحه استفاده کنید.
+        .دستگاهی برای نمایش وجود ندارد. برای افزودن دستگاه از دکمه + در پایین
+        صفحه استفاده کنید.
       </p>
     </div>
   </v-container>
 </template>
 <script>
+import deviceCard from '~/components/deviceCard.vue'
 export default {
+  components: { deviceCard },
   layout: 'dashboard',
   data () {
     return {
       devices: [],
-      deviceName: ['پایش امنیت هوشمند', 'تشخیص دود هوشمند', 'دزدگیر هوشمند']
+      deviceName: ['پایش امنیت هوشمند', 'تشخیص دود هوشمند', 'دزدگیر هوشمند'],
+      offlineDataWarning: false
     }
   },
   fetch () {
-    this.$nuxt.$emit('getDataFromLocal', 'devices', 'devicesReceived')
     if (this.$store.state.onlineStatus) {
-      this.$nuxt.$emit('getReq', 'user/devices', 'devicesReceived', { saveToLocal: true, saveToLocalKey: 'devices' })
+      this.$nuxt.$emit('getReq', 'user/devices', 'devicesReceived', {
+        saveToLocal: true,
+        saveToLocalKey: 'devices'
+      })
+    } else {
+      this.$nuxt.$emit('getDataFromLocal', 'devices', 'devicesReceived')
+    }
+  },
+  head () {
+    return {
+      title: 'داشبورد'
     }
   },
   created () {
     this.$nuxt.$on('devicesReceived', (devices) => {
-      this.devices = devices
+      this.$nextTick(() => {
+        this.devices = devices
+      })
+    })
+    this.$nuxt.$on('error', () => { // network error
+      this.offlineDataWarning = true
+      this.$nuxt.$emit('getDataFromLocal', 'devices', 'devicesReceived')
     })
   },
   beforeDestroy () {
     this.$nuxt.$off('devicesReceived')
+    this.$nuxt.$off('error')
   },
   methods: {
     setSelectedDevice (index, path) {
@@ -115,5 +82,4 @@ export default {
   }
 }
 </script>
-<style>
-</style>
+<style></style>
