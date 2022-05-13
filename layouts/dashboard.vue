@@ -42,11 +42,11 @@
       />
       <v-spacer />
       <online-indicator />
-      <v-btn elevation="0" small fab color="accent" @click="goBack">
+      <!-- <v-btn elevation="0" small fab color="accent" @click="goBack">
         <v-icon color="primary">
           mdi-arrow-u-left-bottom
         </v-icon>
-      </v-btn>
+      </v-btn> -->
     </v-app-bar>
     <v-main class="accent mb-8">
       <v-container class="h-100">
