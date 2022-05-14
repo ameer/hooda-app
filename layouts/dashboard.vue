@@ -11,7 +11,7 @@
       <user-avatar :user="user" />
       <v-divider class="mt-4" />
       <v-list class="">
-        <v-list-item v-for="(item, i) in items" :key="i">
+        <v-list-item v-for="(item, i) in items" :key="i" :to="`/dashboard/${item.to}`" nuxt exact>
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
@@ -82,9 +82,9 @@
         </v-icon>
       </v-btn>
 
-      <v-btn>
+      <v-btn nuxt to="/dashboard/guides">
         <v-icon large>
-          mdi-account-outline
+          mdi-help
         </v-icon>
       </v-btn>
     </v-bottom-navigation>
@@ -114,7 +114,7 @@ export default {
         {
           icon: 'mdi-cellphone-link',
           title: 'دستگاه‌های من',
-          to: '/'
+          to: ''
         },
         {
           icon: 'mdi-share-variant-outline',
@@ -129,7 +129,7 @@ export default {
         {
           icon: 'mdi-help',
           title: 'راهنما',
-          to: '/'
+          to: 'guides'
         },
         {
           icon: 'mdi-cog-outline',

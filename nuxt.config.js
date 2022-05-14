@@ -50,7 +50,8 @@ export default {
   modules: [
     '@nuxtjs/axios',
     '@nuxtjs/auth-next',
-    'vue-toastification/nuxt'
+    'vue-toastification/nuxt',
+    '@nuxt/content'
   ],
   auth: {
     plugins: ['~/plugins/axios'],
