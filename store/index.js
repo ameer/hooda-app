@@ -2,7 +2,8 @@ export const state = () => ({
   onlineStatus: false,
   devices: [],
   selectedDevice: null,
-  isKeyboardShown: false
+  isKeyboardShown: false,
+  platform: 'web'
 })
 
 export const mutations = {
@@ -17,5 +18,8 @@ export const mutations = {
   },
   setKeyboardShown (state, status) {
     state.isKeyboardShown = status
+  },
+  setPlatform (state, platform) {
+    state.platform = platform
   }
 }

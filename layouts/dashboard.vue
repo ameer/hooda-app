@@ -98,6 +98,7 @@
 </template>
 
 <script>
+import { Capacitor } from '@capacitor/core'
 import { Storage } from '@capacitor/storage'
 import OnlineIndicator from '~/components/onlineIndicator.vue'
 import userAvatar from '~/components/userAvatar.vue'
@@ -152,6 +153,7 @@ export default {
     }
   },
   async mounted () {
+    this.$store.commit('setPlatform', Capacitor.getPlatform())
     const devices = await this.getDataFromLocal('devices')
     this.$store.commit('setDevices', devices)
   },

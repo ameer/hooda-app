@@ -30,7 +30,6 @@ export default {
   components: { LottieAnimation },
   layout: 'dashboard',
   async asyncData ({ $content, params }) {
-    console.log(params)
     const article = await $content('guides', params.slug).fetch()
 
     return { article }

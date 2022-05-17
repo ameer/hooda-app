@@ -97,7 +97,7 @@ export default {
   axios: {
     // baseUrl: 'https://api.hoo-da.ir/api/v1/',
     // baseUrl: 'http://192.168.1.189:8000/api/v1/',
-    baseUrl: 'http://192.168.42.182:8000/api/v1/',
+    baseUrl: 'http://localhost:8000/api/v1/',
     credentials: true
   },
 

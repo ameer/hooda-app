@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h4 class="text--primary mb-4 text-center">
-      نوع دستگاه خود را انتخاب کنید:
+      {{ stepTitle }}
     </h4>
     <v-row align="center" justify="center" class="mt-4">
       <v-col cols="12" md="4">
@@ -10,36 +10,12 @@
             class="elevation-0 align-start justify-center hide-divider accent"
           >
             <v-stepper-step
+              v-for="(stepper) in numberOfSteps"
+              :key="stepper"
               color="primary lighten-1"
               complete-icon=""
               step=""
-              :complete="step === 1"
-            />
-            <v-divider />
-            <v-stepper-step
-              color="primary lighten-1"
-              complete-icon=""
-              step=""
-              :complete="step === 2"
-            />
-            <v-divider />
-            <v-stepper-step
-              color="primary lighten-1"
-              complete-icon=""
-              step=""
-              :complete="step === 3"
-            />
-            <v-stepper-step
-              color="primary lighten-1"
-              complete-icon=""
-              step=""
-              :complete="step === 4"
-            />
-            <v-stepper-step
-              color="primary lighten-1"
-              complete-icon=""
-              step=""
-              :complete="step === 5"
+              :complete="step === stepper"
             />
           </v-stepper-header>
           <v-stepper-items class="accent">
@@ -139,70 +115,75 @@
                 </v-btn>
               </v-form>
             </v-stepper-content>
-            <v-stepper-content step="3" class="px-0">
-              <p class="text-body-1">
-                در این مرحله شماره‌ی زیر به عنوان مدیر اصلی در حافظه دستگاه ثبت خواهد شد.
-              </p>
-              <span class="d-block faNum font-weight-bold primary--text my-4 text-center" style="font-size:2rem;">
-                {{ firstAdminNumber }}
-              </span>
-              <div v-if="isDualSim">
-                <div v-if="typeof user.simCardSlot === 'undefined'" class="text-body-1">
-                  با توجه به اینکه از این پس کلیه ارتباطات با دستگاه از طریق این شماره خواهد بود، لطفا انتخاب کنید این شماره مربوط به کدام سیم کارت است:
-                  <v-form ref="dualSimForm" v-model="valid.dualSimForm" @submit.prevent="submitSMSConfirmStep">
-                    <v-radio-group v-model="selectedSim" class="px-4" :rules="[rules.required]">
-                      <v-radio
-                        v-for="(sim,i) in simInfo.activeSubscriptionInfoCount"
-                        :key="i"
-                        class="mb-4"
-                        :label="`سیم کارت ${i+1} ${sim.displayName ? '('+sim.displayName+')' : ''}`"
-                        :value="i + 1"
-                      />
-                    </v-radio-group>
+            <template v-if="numberOfSteps > 3">
+              <v-stepper-content step="3" class="px-0">
+                <p class="text-body-1">
+                  در این مرحله شماره‌ی زیر به عنوان مدیر اصلی در حافظه دستگاه ثبت خواهد شد.
+                </p>
+                <span class="d-block faNum font-weight-bold primary--text my-4 text-center" style="font-size:2rem;">
+                  {{ firstAdminNumber }}
+                </span>
+                <div v-if="isDualSim">
+                  <div v-if="typeof user.simCardSlot === 'undefined'" class="text-body-1">
+                    با توجه به اینکه از این پس کلیه ارتباطات با دستگاه از طریق این شماره خواهد بود، لطفا انتخاب کنید این شماره مربوط به کدام سیم کارت است:
+                    <v-form ref="dualSimForm" v-model="valid.dualSimForm" @submit.prevent="submitSMSConfirmStep">
+                      <v-radio-group v-model="selectedSim" class="px-4" :rules="[rules.required]">
+                        <v-radio
+                          v-for="(sim,i) in simInfo.activeSubscriptionInfoCount"
+                          :key="i"
+                          class="mb-4"
+                          :label="`سیم کارت ${i+1} ${sim.displayName ? '('+sim.displayName+')' : ''}`"
+                          :value="i + 1"
+                        />
+                      </v-radio-group>
+                      <v-btn
+                        block
+                        large
+                        rounded
+                        color="green darken-3"
+                        :disabled="!valid.dualSimForm"
+                        :loading="loading"
+                        type="submit"
+                      >
+                        <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                      </v-btn>
+                    </v-form>
+                  </div>
+                  <div v-else>
+                    <p class="text-body-1">
+                      پیامک تایید از طریق سیمکارت <span class="faNum">{{ user.simCardSlot }}</span> ارسال می شود.
+                    </p>
                     <v-btn
                       block
                       large
                       rounded
                       color="green darken-3"
-                      :disabled="!valid.dualSimForm"
                       :loading="loading"
-                      type="submit"
+                      @click="submitSMSConfirmStep"
                     >
                       <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
                     </v-btn>
-                  </v-form>
+                  </div>
                 </div>
-                <div v-else>
-                  <p class="text-body-1">
-                    پیامک تایید از طریق سیمکارت <span class="faNum">{{ user.simCardSlot }}</span> ارسال می شود.
-                  </p>
-                  <v-btn
-                    block
-                    large
-                    rounded
-                    color="green darken-3"
-                    :loading="loading"
-                    @click="submitSMSConfirmStep"
-                  >
-                    <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
-                  </v-btn>
+              </v-stepper-content>
+              <v-stepper-content step="4" class="px-0">
+                <p class="text-body-1">
+                  یک پیامک جهت ثبت شماره شما به دستگاه ارسال شده است. لطفا تا زمان دریافت پیامک تایید صبر کنید.
+                </p>
+                <div class="spinner">
+                  <div class="rect1" />
+                  <div class="rect2" />
+                  <div class="rect3" />
+                  <div class="rect4" />
+                  <div class="rect5" />
                 </div>
-              </div>
-            </v-stepper-content>
-            <v-stepper-content step="4" class="px-0">
-              <p class="text-body-1">
-                یک پیامک جهت ثبت شماره شما به دستگاه ارسال شده است. لطفا تا زمان دریافت پیامک تایید صبر کنید.
+              </v-stepper-content>
+            </template>
+            <v-stepper-content :step="numberOfSteps === 3 ? 3 : 5" class="px-0">
+              <p v-if="platform === 'web'" class="text-body-1 mb-4">
+                دستگاه به حساب کاربری شما افزوده شد. جهت ثبت شماره خود به عنوان مدیر اول به پنل دستگاه مراجعه کنید.
               </p>
-              <div class="spinner">
-                <div class="rect1" />
-                <div class="rect2" />
-                <div class="rect3" />
-                <div class="rect4" />
-                <div class="rect5" />
-              </div>
-            </v-stepper-content>
-            <v-stepper-content step="5" class="px-0">
-              <p class="text-body-1 mb-4">
+              <p v-else class="text-body-1 mb-4">
                 شماره شما با موفقیت به عنوان مدیر اصلی در حافظه دستگاه ثبت شد.
               </p>
               <v-btn color="secondary" block x-large rounded @click="syncDeviceWithServer">
@@ -252,6 +233,29 @@ export default {
     }
   },
   computed: {
+    stepTitle () {
+      return this.step === 1
+        ? 'نوع دستگاه و شماره سریال'
+        : this.step === 2
+          ? 'شماره سیم‌کارت و محل نصب دستگاه'
+          : this.step === 3
+            ? 'تایید شماره سیم کارت'
+            : this.step === 4
+              ? 'تایید پیامک'
+              : this.step === 5
+                ? 'پایان فرآیند'
+                : ''
+    },
+    numberOfSteps () {
+      if (this.platform === 'android') {
+        return 5
+      } else {
+        return 3
+      }
+    },
+    platform () {
+      return this.$store.state.platform
+    },
     firstAdminNumber () {
       return this.$auth.user.phone
     },
@@ -315,19 +319,21 @@ export default {
       this.$nuxt.$emit('postReq', 'user/check-device', 'deviceChecked', this.formData)
     },
     async submitDeviceDetail () {
-      const res = await Sim.hasReadPermission()
-      if (!res) {
-        const permission = await AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.READ_PHONE_STATE)
-        if (!permission.hasPermission) {
-          this.$toast.error('برای ادامه نیاز به دسترسی به سیم کارت داریم.'); return false
+      if (this.platform !== 'web') {
+        const res = await Sim.hasReadPermission()
+        if (!res) {
+          const permission = await AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.READ_PHONE_STATE)
+          if (!permission.hasPermission) {
+            this.$toast.error('برای ادامه نیاز به دسترسی به سیم کارت داریم.'); return false
+          }
         }
-      }
-      const simInfo = await Sim.getSimInfo()
-      this.simInfo = simInfo
-      if (this.simInfo.phoneCount > 1 && this.simInfo.activeSubscriptionInfoCount > 1) {
-        this.isDualSim = true
-      } else {
-        this.isDualSim = false
+        const simInfo = await Sim.getSimInfo()
+        this.simInfo = simInfo
+        if (this.simInfo.phoneCount > 1 && this.simInfo.activeSubscriptionInfoCount > 1) {
+          this.isDualSim = true
+        } else {
+          this.isDualSim = false
+        }
       }
       this.step = 3
     },

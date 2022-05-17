@@ -49,10 +49,11 @@ export default {
   },
   methods: {
     logout () {
-      this.$auth.setUserToken(null)
-      this.$auth.setUser(null)
+      // this.$auth.setUserToken(null)
+      // this.$auth.setUser(null)
       this.$auth.$storage.removeUniversal('user')
-      this.$router.push('/login')
+      this.$auth.logout()
+      // this.$router.push('/login')
     }
   }
 }

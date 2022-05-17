@@ -1,6 +1,6 @@
 <template>
   <v-container class="h-100">
-    <v-row justify="stretch" align="center" class="h-100">
+    <v-row align="center" class="h-100">
       <v-col cols="12">
         <div :class="{'animate__animated animate__rotateIn' : animate}">
           <v-img src="/logo-dark-bg.svg" contain max-height="128px" />
@@ -9,10 +9,10 @@
         <animated-text />
       </v-col>
       <v-col cols="12" class="text-center mt-auto">
-        <div class="d-flex align-center justify-space-around">
+        <div class="d-flex align-center justify-space-around justify-md-center">
           <v-btn
             rounded
-            class="animate__animated animate__fadeInUp"
+            class="animate__animated animate__fadeInUp mx-md-8"
             color="accent"
             to="/auth/signup"
             max-width="120px"
@@ -23,7 +23,7 @@
           </v-btn>
           <v-btn
             rounded
-            class="animate__animated animate__fadeInUp"
+            class="animate__animated animate__fadeInUp mx-md-8"
             color="accent"
             to="/auth/login"
             max-width="120px"
