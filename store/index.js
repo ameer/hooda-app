@@ -10,6 +10,9 @@ export const mutations = {
   changeOnlineStatus (state, status) {
     state.onlineStatus = status
   },
+  addToDevices (state, device) {
+    state.devices.push(device)
+  },
   setDevices (state, devices) {
     state.devices = devices
   },

@@ -85,7 +85,21 @@
                   hide-details="auto"
                   tabindex="1"
                 />
-
+                <v-text-field
+                  v-model="formData.nickname"
+                  dir="auto"
+                  class="mb-4"
+                  filled
+                  flat
+                  type="text"
+                  label="نام مستعار دستگاه"
+                  hint="یک نام دلخواه برای دستگاه تعیین کنید. مثال: دزدگیر خانه"
+                  persistent-hint
+                  prepend-inner-icon="mdi-ballot-outline"
+                  rounded
+                  hide-details="auto"
+                  tabindex="2"
+                />
                 <v-text-field
                   v-model="formData.location"
                   dir="auto"
@@ -99,7 +113,7 @@
                   prepend-inner-icon="mdi-home-outline"
                   rounded
                   hide-details="auto"
-                  tabindex="2"
+                  tabindex="3"
                 />
                 <v-btn
                   block
@@ -221,6 +235,7 @@ export default {
       verifyDeviceDialog: false,
       formData: {
         deviceType: 0,
+        nickname: '',
         serialNumber: '',
         simCardNumber: '',
         location: ''

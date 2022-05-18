@@ -7,6 +7,13 @@
         </v-col>
         <v-col cols="9">
           <div
+            v-if="device.nickname"
+            class="text--primary text--darken-1 text-body-1 font-weight-bold mb-2"
+          >
+            {{ device.nickname }}
+          </div>
+          <div
+            v-else
             class="text--primary text--darken-1 text-body-1 font-weight-bold mb-2"
           >
             پایش امنیت هوشمند <span class="faNum">#{{ i + 1 }}</span>
@@ -38,7 +45,7 @@
         outlined
         rounded
         @click.prevent="
-          setSelectedDevice(i, `/dashboard/device-panel/${device.id}`)
+          setSelectedDevice(i, `/dashboard/device-panel/${device.uuid}`)
         "
       >
         <v-icon left>
@@ -47,7 +54,12 @@
         <span class="font-weight-bold text-body-2">پنل دستگاه</span>
       </v-btn>
       <v-spacer />
-      <v-btn icon>
+      <v-btn
+        icon
+        @click.prevent="
+          setSelectedDevice(i, `/dashboard/devices/${device.uuid}`)
+        "
+      >
         <v-icon>
           mdi-square-edit-outline
         </v-icon>

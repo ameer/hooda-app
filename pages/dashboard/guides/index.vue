@@ -47,6 +47,11 @@ export default {
         { title: 'دستورهای پیامکی', file: 'sms-commands' }
       ]
     }
+  },
+  head () {
+    return {
+      title: 'راهنما'
+    }
   }
 }
 </script>

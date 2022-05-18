@@ -91,7 +91,7 @@ export default {
     // self.getDeviceData()
     // self.timerId = setInterval(self.getDeviceData, 20000)
     this.commands = this.$store.getters['commands/getUserCommands']()
-    this.$nuxt.$emit('getDeviceById', parseInt(this.$route.params.id), 'deviceRecieved')
+    this.$nuxt.$emit('getDeviceById', this.$route.params.id, 'deviceRecieved')
     this.loading = true
     if ((this.device === null || this.device === undefined) && this.$store.state.onlineStatus) {
       this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}`, 'deviceRecieved')
@@ -120,7 +120,7 @@ export default {
       this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}/data`, 'deviceDataRecieved')
     },
     runCommand (command) {
-      this.checkAndSend('09912509160', command)
+      this.checkAndSend(this.device.sim_number, command)
       this.startWatching()
     },
     startWatching () {

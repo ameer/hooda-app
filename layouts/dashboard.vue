@@ -48,52 +48,36 @@
         </v-icon>
       </v-btn> -->
     </v-app-bar>
-    <v-main class="accent mb-8">
+    <v-main class="accent" style="padding-bottom:128px;">
       <v-container class="h-100">
         <Nuxt />
       </v-container>
     </v-main>
-    <v-bottom-navigation
-      :class="isKeyboardShown ? 'keyboard-open' : ''"
-      app
-      color="primary"
-      grow
-      height="64"
-    >
-      <v-btn
-        nuxt
-        to="/dashboard/"
-        exact
-      >
-        <v-icon large>
-          mdi-home-outline
-        </v-icon>
-      </v-btn>
-
-      <v-btn
-        color="green"
-        fab
-        class="fab"
-        to="/dashboard/add-device"
-        nuxt
-      >
-        <v-icon color="white">
-          mdi-plus
-        </v-icon>
-      </v-btn>
-
-      <v-btn nuxt to="/dashboard/guides">
-        <v-icon large>
-          mdi-help
-        </v-icon>
-      </v-btn>
-    </v-bottom-navigation>
-    <!-- <v-footer
-      :absolute="!fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer> -->
+    <div id="mobile-nav" :class="isKeyboardShown ? 'keyboard-open' : ''" class="d-flex d-md-none">
+      <v-container id="mobile-nav-menu-container">
+        <v-row align="center" justify="space-around" class="flex-wrap">
+          <v-btn
+            v-for="(btn, i) in items"
+            :key="`mobile-nav-item-${i}`"
+            :large="btn.isCenter"
+            fab
+            dark
+            :elevation="btn.isCenter ? 4 : 0"
+            color="#006090"
+            :class="{'center-fab' : btn.isCenter}"
+            :to="`/dashboard/${btn.to}`"
+            exact
+          >
+            <v-icon style="font-size:30px">
+              {{ btn.icon }}
+            </v-icon>
+          </v-btn>
+        </v-row>
+      </v-container>
+      <div class="mobile_navigation_bg">
+        <svg class="footersvgmobileholder" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64"><path d="M0,0H104a31.55,31.55,0,0,1,25.45,12.91l6.2,8.48a30.17,30.17,0,0,0,48.7,0l6.2-8.48A31.55,31.55,0,0,1,216,0H320V64H0Z" /></svg>
+      </div>
+    </div>
   </v-app>
 </template>
 
@@ -113,19 +97,20 @@ export default {
       fixed: false,
       items: [
         {
-          icon: 'mdi-cellphone-link',
-          title: 'دستگاه‌های من',
-          to: ''
-        },
-        {
-          icon: 'mdi-share-variant-outline',
+          icon: 'mdi-share-variant',
           title: 'معرفی به دوستان',
           to: '/'
         },
         {
-          icon: 'mdi-phone-outline',
+          icon: 'mdi-headset',
           title: 'ارتباط با ما',
           to: '/'
+        },
+        {
+          icon: 'mdi-home',
+          title: 'دستگاه‌های من',
+          isCenter: true,
+          to: ''
         },
         {
           icon: 'mdi-help',
@@ -133,7 +118,7 @@ export default {
           to: 'guides'
         },
         {
-          icon: 'mdi-cog-outline',
+          icon: 'mdi-cog',
           title: 'تنظیمات',
           to: '/'
         }
@@ -160,6 +145,8 @@ export default {
   created () {
     this.$nuxt.$on('getReq', this.getReq)
     this.$nuxt.$on('postReq', this.postReq)
+    this.$nuxt.$on('putReq', this.putReq)
+    this.$nuxt.$on('saveDeviceToLocal', this.saveDeviceToLocal)
     this.$nuxt.$on('saveDataToLocal', this.saveDataToLocal)
     this.$nuxt.$on('getDataFromLocal', this.getDataFromLocal)
     this.$nuxt.$on('getDeviceById', this.getDeviceById)
@@ -169,6 +156,8 @@ export default {
   beforeDestroy () {
     this.$nuxt.$off('getReq', this.getReq)
     this.$nuxt.$off('postReq', this.postReq)
+    this.$nuxt.$off('putReq', this.putReq)
+    this.$nuxt.$off('saveDeviceToLocal', this.saveDeviceToLocal)
     this.$nuxt.$off('saveDataToLocal', this.saveDataToLocal)
     this.$nuxt.$off('getDataFromLocal', this.getDataFromLocal)
     this.$nuxt.$off('getDeviceById', this.getDeviceById)
@@ -183,6 +172,24 @@ export default {
       const self = this
       self.$axios
         .post(endpoint, data, { withCredentials: true })
+        .then((resp) => {
+          self.$nuxt.$emit(event, resp)
+        })
+        .catch((err) => {
+          self.$nuxt.$emit('error')
+          let msg = ''
+          if ('errors' in err.response.data) {
+            msg = self.errMsgGenerator(err.response.data.errors)
+          } else {
+            msg = err.response.data.message
+          }
+          self.$toast.error(msg)
+        })
+    },
+    putReq (endpoint, event, data) {
+      const self = this
+      self.$axios
+        .put(endpoint, data, { withCredentials: true })
         .then((resp) => {
           self.$nuxt.$emit(event, resp)
         })
@@ -230,7 +237,7 @@ export default {
     },
     saveDeviceToLocal (device) {
       const devices = this.$store.state.devices
-      devices.push(device)
+      this.$store.commit('addToDevices', device)
       this.saveDataToLocal('devices', devices)
       this.$store.commit('setDevices', devices)
     },
@@ -258,9 +265,9 @@ export default {
       return JSON.parse(value)
     },
 
-    async getDeviceById (id, event = null) {
+    async getDeviceById (uuid, event = null) {
       const devices = await this.getDataFromLocal('devices')
-      const device = devices.find(device => device.id === id)
+      const device = devices.find(device => device.uuid === uuid)
       if (event) {
         this.$nuxt.$emit(event, { data: device })
       }

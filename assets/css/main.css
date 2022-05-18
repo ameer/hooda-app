@@ -3,8 +3,7 @@
   font-family: Hooda;
   font-weight: 300;
   font-display: swap;
-  src: url("~assets/fonts/Vazir-Thin-UI.woff") format("woff"),
-    url("~assets/fonts/Vazir-Thin-UI.woff2") format("woff2");
+  src: url("~assets/fonts/Vazir-Thin-UI.woff") format("woff"), url("~assets/fonts/Vazir-Thin-UI.woff2") format("woff2");
 }
 
 @font-face {
@@ -19,8 +18,7 @@
   font-family: Hooda;
   font-weight: 700;
   font-display: swap;
-  src: url("~assets/fonts/Vazir-Bold-UI.woff") format("woff"),
-    url("~assets/fonts/Vazir-Bold-UI.woff2") format("woff2");
+  src: url("~assets/fonts/Vazir-Bold-UI.woff") format("woff"), url("~assets/fonts/Vazir-Bold-UI.woff2") format("woff2");
 }
 @font-face {
   font-family: HoodaFaNum;
@@ -107,11 +105,7 @@ body {
   width: 100px;
   height: 100px;
   background: rgb(41, 242, 200);
-  background: linear-gradient(
-    307deg,
-    rgba(41, 242, 200, 1) 0%,
-    rgba(6, 161, 217, 1) 100%
-  );
+  background: linear-gradient(307deg, rgba(41, 242, 200, 1) 0%, rgba(6, 161, 217, 1) 100%);
 }
 .validInput .v-input__prepend-inner {
   align-self: center !important;
@@ -312,8 +306,7 @@ input.otp-input:focus-visible {
 }
 .device-card,
 .main-box-shadow {
-  box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05),
-    0 15px 40px rgba(166, 173, 201, 0.2) !important;
+  box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05), 0 15px 40px rgba(166, 173, 201, 0.2) !important;
 }
 .animate__animated {
   -webkit-animation-duration: 1s;
@@ -394,6 +387,10 @@ input.otp-input:focus-visible {
   width: 0;
   transform: translate(-20px, -20px);
 }
+.v-messages__message {
+  line-height: 20px !important;
+  font-size: 14px;
+}
 /*
 * text
 */
@@ -419,8 +416,7 @@ input.otp-input:focus-visible {
   left: -80px;
   top: 0;
 
-  animation: text-animation0 1s ease-in-out 1s 1 normal forwards,
-    text2-animation0 2s ease-in-out 5s 1 normal forwards;
+  animation: text-animation0 1s ease-in-out 1s 1 normal forwards, text2-animation0 2s ease-in-out 5s 1 normal forwards;
 }
 .text0::after {
   animation: text-after-animation0 2s ease-in-out 3s 1 normal forwards;
@@ -429,8 +425,7 @@ input.otp-input:focus-visible {
   left: -40px;
   top: 0;
 
-  animation: text-animation1 1s ease-in-out 1.2s 1 normal forwards,
-    text2-animation1 2s ease-in-out 5s 1 normal forwards;
+  animation: text-animation1 1s ease-in-out 1.2s 1 normal forwards, text2-animation1 2s ease-in-out 5s 1 normal forwards;
 }
 .text1::after {
   animation: text-after-animation1 2s ease-in-out 3s 1 normal forwards;
@@ -439,8 +434,7 @@ input.otp-input:focus-visible {
   left: 0px;
   top: 0;
 
-  animation: text-animation2 1s ease-in-out 1.4s 1 normal forwards,
-    text2-animation2 2s ease-in-out 5s 1 normal forwards;
+  animation: text-animation2 1s ease-in-out 1.4s 1 normal forwards, text2-animation2 2s ease-in-out 5s 1 normal forwards;
 }
 .text2::after {
   animation: text-after-animation2 2s ease-in-out 3s 1 normal forwards;
@@ -449,8 +443,7 @@ input.otp-input:focus-visible {
   left: 40px;
   top: 0;
 
-  animation: text-animation3 1s ease-in-out 1.6s 1 normal forwards,
-    text2-animation3 2s ease-in-out 5s 1 normal forwards;
+  animation: text-animation3 1s ease-in-out 1.6s 1 normal forwards, text2-animation3 2s ease-in-out 5s 1 normal forwards;
 }
 .text3::after {
   animation: text-after-animation3 2s ease-in-out 3s 1 normal forwards;
@@ -459,8 +452,7 @@ input.otp-input:focus-visible {
   left: 80px;
   top: 0;
 
-  animation: text-animation4 1s ease-in-out 1.8s 1 normal forwards,
-    text2-animation4 2s ease-in-out 5s 1 normal forwards;
+  animation: text-animation4 1s ease-in-out 1.8s 1 normal forwards, text2-animation4 2s ease-in-out 5s 1 normal forwards;
 }
 .text4::after {
   animation: text-after-animation4 2s ease-in-out 3s 1 normal forwards;
@@ -469,8 +461,7 @@ input.otp-input:focus-visible {
   left: 120px;
   top: 0;
 
-  animation: text-animation5 1s ease-in-out 2s 1 normal forwards,
-    text2-animation5 2s ease-in-out 5s 1 normal forwards;
+  animation: text-animation5 1s ease-in-out 2s 1 normal forwards, text2-animation5 2s ease-in-out 5s 1 normal forwards;
 }
 .text5::after {
   animation: text-after-animation5 2s ease-in-out 3s 1 normal forwards;
@@ -2630,4 +2621,97 @@ input.otp-input:focus-visible {
   50% {
     opacity: 1;
   }
+}
+div#mainBottomNav {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 80px;
+}
+
+svg.footersvgmobileholder {
+  filter: drop-shadow(0px 19px 17px rgb(0 0 0 / 0.4));
+  fill: #fbfbfd;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+div#bottomNav {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#mobile-nav {
+  align-content: center;
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  position: fixed;
+  right: 0;
+  width: 100%;
+  z-index: 2001;
+}
+#mobile-nav .mobile_navigation_bg svg {
+  filter: drop-shadow(0px 19px 17px rgb(0 0 0 / 0.4));
+  fill: #006090;
+  height: 75px;
+  width: 100%;
+}
+#mobile-nav .mobile_navigation_bg {
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+}
+#mobile-nav #mobile-nav-menu-container {
+  position: relative;
+  z-index: 100;
+}
+#mobile-nav .mobile_navigation_menu ul {
+  align-content: center;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+}
+#mobile-nav .mobile_navigation_menu ul li {
+  align-content: center;
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+#mobile-nav .mobile_navigation_menu ul li .link_mobile,
+#mobile-nav .mobile_navigation_menu ul li a {
+  align-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+#mobile-nav .mobile_navigation_menu ul li span {
+  color: #868686;
+  display: block;
+  font-weight: 400;
+  margin-bottom: 7px;
+  width: 100%;
+}
+.center-fab {
+  transform: translateY(-75%);
+}
+svg:not(:root) {
+  overflow: hidden;
+}
+.list-style-none {
+  list-style: none !important;
 }
