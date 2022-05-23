@@ -105,8 +105,8 @@ export default {
   created () {
     this.$nuxt.$on('postReq', this.postReq)
     this.$nuxt.$on('login', this.login)
-    this.$nuxt.$on('userLoggedIn', () => {
-      this.$toast.success(this.$auth.user.fullname + ' خوش آمدید')
+    this.$nuxt.$on('userLoggedIn', (user) => {
+      this.$toast.success(user.fullname + ' خوش آمدید')
     })
   },
   beforeDestroy () {
@@ -137,9 +137,9 @@ export default {
       this.$auth.loginWith('local', { data: loginData, timeout: 10000 }).then((resp) => {
         this.$auth.setUserToken(resp.data.token)
         this.$auth.setUser(resp.data.user)
-        this.$auth.$storage.setUniversal('user', this.$auth.user)
+        this.$auth.$storage.setUniversal('user', resp.data.user)
         this.$router.push('/dashboard')
-        this.$nuxt.$emit('userLoggedIn')
+        this.$nuxt.$emit('userLoggedIn', resp.data.user)
       }).catch((error) => {
         this.$nuxt.$emit('error')
         if (!error.response) {

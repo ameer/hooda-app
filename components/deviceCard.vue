@@ -3,7 +3,7 @@
     <v-card-text>
       <v-row align="center" dense no-gutters>
         <v-col cols="3">
-          <v-img contain src="/ghome.png" max-height="64px" />
+          <v-img contain src="/device.png" max-height="64px" />
         </v-col>
         <v-col cols="9">
           <div

@@ -289,8 +289,12 @@ input.otp-input:focus-visible {
 .v-bottom-navigation {
   transition: all 0.5s ease-in-out;
 }
-.v-bottom-navigation.keyboard-open {
-  bottom: -100% !important;
+#mobile-nav {
+  transform: translateY(0);
+  transition: transform .3s ease-in-out;
+}
+#mobile-nav.keyboard-open {
+  transform: translateY(200%) !important;
 }
 .neumorphism-box-shadow {
   border-radius: 50px;

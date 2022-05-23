@@ -59,6 +59,7 @@
                   tabindex="3"
                 />
                 <v-btn
+                  dark
                   block
                   large
                   rounded
@@ -68,7 +69,7 @@
                   type="submit"
                   tabindex="3"
                 >
-                  <span class="font-weight-bold white--text text-body-1">ذخیره اطلاعات</span>
+                  <span class="font-weight-bold text-body-1">ذخیره اطلاعات</span>
                 </v-btn>
               </v-form>
             </v-card-text>

@@ -65,11 +65,11 @@
             :elevation="btn.isCenter ? 4 : 0"
             color="#006090"
             :class="{'center-fab' : btn.isCenter}"
-            :to="`/dashboard/${btn.to}`"
+            :to="`/dashboard/${btn.isCenter && isDashboard ? btn.dashboardIcon.to : btn.to}`"
             exact
           >
             <v-icon style="font-size:30px">
-              {{ btn.icon }}
+              {{ btn.isCenter && isDashboard ? btn.dashboardIcon.icon : btn.icon }}
             </v-icon>
           </v-btn>
         </v-row>
@@ -95,6 +95,10 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
+      miniVariant: false,
+      right: true,
+      rightDrawer: false,
+      title: 'هــودا',
       items: [
         {
           icon: 'mdi-share-variant',
@@ -107,6 +111,11 @@ export default {
           to: '/'
         },
         {
+          dashboardIcon: {
+            icon: 'mdi-plus',
+            title: 'افزودن دستگاه',
+            to: 'add-device'
+          },
           icon: 'mdi-home',
           title: 'دستگاه‌های من',
           isCenter: true,
@@ -122,14 +131,13 @@ export default {
           title: 'تنظیمات',
           to: '/'
         }
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'هــودا'
+      ]
     }
   },
   computed: {
+    isDashboard () {
+      return this.$route.name === 'dashboard'
+    },
     user () {
       return this.$auth.user
     },
@@ -168,8 +176,12 @@ export default {
     goBack () {
       this.$router.back()
     },
+    setLoading (value) {
+      this.$store.commit('setLoading', value)
+    },
     postReq (endpoint, event, data) {
       const self = this
+      self.setLoading(true)
       self.$axios
         .post(endpoint, data, { withCredentials: true })
         .then((resp) => {
@@ -184,10 +196,13 @@ export default {
             msg = err.response.data.message
           }
           self.$toast.error(msg)
+        }).finally(() => {
+          self.setLoading(false)
         })
     },
     putReq (endpoint, event, data) {
       const self = this
+      self.setLoading(true)
       self.$axios
         .put(endpoint, data, { withCredentials: true })
         .then((resp) => {
@@ -202,25 +217,31 @@ export default {
             msg = err.response.data.message
           }
           self.$toast.error(msg)
+        }).finally(() => {
+          self.setLoading(false)
         })
     },
     getReq (endpoint, event, options = { saveToLocal: false, saveToLocalKey: null }) {
-      this.$axios
+      const self = this
+      self.setLoading(true)
+      self.$axios
         .get(endpoint)
         .then((response) => {
           if (options.saveToLocal) {
-            this.saveDataToLocal(options.saveToLocalKey, response.data)
+            self.saveDataToLocal(options.saveToLocalKey, response.data)
           }
-          this.$nuxt.$emit(event, response.data)
+          self.$nuxt.$emit(event, response.data)
         })
         .catch((err) => {
-          this.$nuxt.$emit('error')
+          self.$nuxt.$emit('error')
           if (err.response) {
             const msg = err.response.data.message
-            this.$toast.error(msg)
+            self.$toast.error(msg)
           } else {
-            this.$toast.error('خطا در ارتباط با سرور. لطفا دوباره تلاش کنید.')
+            self.$toast.error('خطا در ارتباط با سرور. لطفا دوباره تلاش کنید.')
           }
+        }).finally(() => {
+          self.setLoading(false)
         })
     },
     errMsgGenerator (errorsObject) {
@@ -237,9 +258,8 @@ export default {
     },
     saveDeviceToLocal (device) {
       const devices = this.$store.state.devices
-      this.$store.commit('addToDevices', device)
+      this.$store.commit('updateDevicesList', device)
       this.saveDataToLocal('devices', devices)
-      this.$store.commit('setDevices', devices)
     },
     /*
     * Save data to capacitor storage
@@ -267,7 +287,7 @@ export default {
 
     async getDeviceById (uuid, event = null) {
       const devices = await this.getDataFromLocal('devices')
-      const device = devices.find(device => device.uuid === uuid)
+      const device = devices[uuid]
       if (event) {
         this.$nuxt.$emit(event, { data: device })
       }

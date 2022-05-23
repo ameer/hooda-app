@@ -1,17 +1,21 @@
 export const state = () => ({
   onlineStatus: false,
-  devices: [],
+  devices: {},
   selectedDevice: null,
   isKeyboardShown: false,
-  platform: 'web'
+  platform: 'web',
+  loading: false
 })
 
 export const mutations = {
+  setLoading (state, payload) {
+    state.loading = payload
+  },
   changeOnlineStatus (state, status) {
     state.onlineStatus = status
   },
-  addToDevices (state, device) {
-    state.devices.push(device)
+  updateDevicesList (state, device) {
+    state.devices[device.uuid] = device
   },
   setDevices (state, devices) {
     state.devices = devices

@@ -1,5 +1,12 @@
 <template>
-  <v-container class="h-100 pa-0">
+  <v-container v-if="$store.state.loading" class="h-100 pa-0 d-flex align-center">
+    <LottieAnimation
+      :path="`motion/loading.json`"
+      :speed="1"
+      :loop="true"
+    />
+  </v-container>
+  <v-container v-else class="h-100 pa-0">
     <div class="text-h5 font-weight-bold text--secondary mt-4 mb-2 text-center">
       دستگاه‌های من
     </div>
@@ -16,15 +23,15 @@
       :style="{ '--total': devices.length }"
     >
       <v-col
-        v-for="(device, i) in devices"
-        :key="`device-${i}`"
+        v-for="(device, id ,i) in devices"
+        :key="`device-${id}`"
         cols="12"
         :style="{'--i': i}"
       >
         <device-card :device="device" :i="i" />
       </v-col>
     </transition-group>
-    <div v-if="!devices.length > 0">
+    <div v-if="!Object.keys(devices).length > 0">
       <p class="text-center">
         .دستگاهی برای نمایش وجود ندارد. برای افزودن دستگاه از دکمه + در پایین
         صفحه استفاده کنید.
@@ -33,9 +40,10 @@
   </v-container>
 </template>
 <script>
+import LottieAnimation from 'lottie-vuejs/src/LottieAnimation.vue'
 import deviceCard from '~/components/deviceCard.vue'
 export default {
-  components: { deviceCard },
+  components: { deviceCard, LottieAnimation },
   layout: 'dashboard',
   data () {
     return {

@@ -38,11 +38,11 @@
                   flat
                   maxlength="16"
                   :rules="[
-                    v => !!v || 'شماره سریال را وارد کنید',
+                    v => !!v || 'کد دستگاه را وارد کنید',
                   ]"
                   type="number"
-                  label="شماره سریال محصول"
-                  hint="شماره سریال روی کارت گارانتی داخل جعبه محصول درج شده است."
+                  label="کد دستگاه"
+                  hint="کد دستگاه روی کارت گارانتی داخل جعبه محصول درج شده است."
                   persistent-hint
                   prepend-inner-icon="mdi-barcode"
                   rounded
@@ -50,6 +50,7 @@
                   tabindex="2"
                 />
                 <v-btn
+                  dark
                   block
                   large
                   rounded
@@ -59,7 +60,7 @@
                   type="submit"
                   tabindex="3"
                 >
-                  <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                  <span class="font-weight-bold text-body-1">مرحله بعد</span>
                 </v-btn>
               </v-form>
             </v-stepper-content>
@@ -116,6 +117,7 @@
                   tabindex="3"
                 />
                 <v-btn
+                  dark
                   block
                   large
                   rounded
@@ -125,7 +127,7 @@
                   type="submit"
                   tabindex="3"
                 >
-                  <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                  <span class="font-weight-bold text-body-1">مرحله بعد</span>
                 </v-btn>
               </v-form>
             </v-stepper-content>
@@ -152,6 +154,7 @@
                       </v-radio-group>
                       <v-btn
                         block
+                        dark
                         large
                         rounded
                         color="green darken-3"
@@ -159,7 +162,7 @@
                         :loading="loading"
                         type="submit"
                       >
-                        <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                        <span class="font-weight-bold text-body-1">مرحله بعد</span>
                       </v-btn>
                     </v-form>
                   </div>
@@ -250,7 +253,7 @@ export default {
   computed: {
     stepTitle () {
       return this.step === 1
-        ? 'نوع دستگاه و شماره سریال'
+        ? 'نوع دستگاه و کد دستگاه'
         : this.step === 2
           ? 'شماره سیم‌کارت و محل نصب دستگاه'
           : this.step === 3
