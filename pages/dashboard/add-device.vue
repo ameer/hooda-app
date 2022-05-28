@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h4 class="text--primary mb-4 text-center">
-      {{ stepTitle }}
+      {{ stepTitle }} {{ simInfo }}
     </h4>
     <v-row align="center" justify="center" class="mt-4">
       <v-col cols="12" md="4">
