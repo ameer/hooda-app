@@ -1,27 +1,25 @@
 <template>
   <v-container class="h-100 px-0">
     <device-card :device="device" :i="-1" />
+    <div class="d-flex align-center my-8">
+      <div class="text-body-1">
+        فرمان‌های پیامکی
+      </div>
+      <v-divider class="mx-2" />
+    </div>
     <transition-group
       name="slide-in"
       tag="div"
-      class="row mt-4 align-stretch"
+      class="row align-stretch"
       :style="{ '--total': commands.length }"
     >
       <v-col
         v-for="(command, i) in commands"
         :key="`command-${i}`"
-        cols="6"
+        cols="12"
         :style="{'--i': i}"
-        @click="runCommand($store.getters['commands/getCommand'](command.name))"
       >
-        <v-card class="main-box-shadow h-100" rounded="xl" min-height="163px">
-          <div class="pt-4">
-            <v-img :src="`/svg/commands-icons/${command.name}.svg`" contain max-height="85px" />
-          </div>
-          <v-card-text class="text-center">
-            <span class="text-body-1 font-weight-bold">{{ $store.getters['i18n/getTranslate'](command.name) }}</span>
-          </v-card-text>
-        </v-card>
+        <CommandCard :command="command" @run="runCommand" />
       </v-col>
     </transition-group>
   </v-container>
@@ -33,8 +31,9 @@ import { SMS } from '@awesome-cordova-plugins/sms'
 import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions'
 import deviceCard from '~/components/deviceCard.vue'
+import CommandCard from '~/components/commandCard.vue'
 export default {
-  components: { deviceCard },
+  components: { deviceCard, CommandCard },
   // components: { gauge, BatteryIndicator },
   layout: 'dashboard',
   data () {
@@ -125,20 +124,21 @@ export default {
     },
     startWatching () {
       SmsRetriever.startWatching().then((res) => {
-        alert(res.Message)
+        this.$nuxt.$emit('messageReceived', res.Message)
       }).catch((err) => {
         // eslint-disable-next-line no-console
-        console.log(err)
+        this.$nuxt.$emit('messageNotReceived', err)
       })
     },
     sendSMS (number, message) {
       const self = this
-      SMS.send(number, message, { android: { intent: '', slot: 1 } })
+      SMS.send(number, message, { android: { intent: '', slot: 0 } })
         .then(() => {
           self.$toast.success('پیامک با موفقیت ارسال شد.')
         })
         .catch((err) => {
           self.$toast.error('مشکلی در ارسال پیامک به وجود آمده است.' + err)
+          this.$nuxt.$emit('messageNotReceived', err)
         })
     },
     checkAndSend (number, message) {
@@ -151,10 +151,11 @@ export default {
             self.sendSMS(number, message)
           }).catch((err) => {
             self.$toast.error(JSON.stringify(err))
+            this.$nuxt.$emit('messageNotReceived', err)
           })
         }
       }
-      const error = function (e) { this.$toast.error('Something went wrong:' + e) }
+      const error = function (err) { this.$toast.error('Something went wrong:' + err); this.$nuxt.$emit('messageNotReceived', err) }
       SMS.hasPermission(success, error)
     }
 

@@ -1,14 +1,15 @@
 export const state = () => ({
   currentPassword: '0000',
-  setAdmin: '$currentPassword hooda admin $adminIndex $mobile',
-  activateAntiTheft: '$currentPassword on',
-  deactivateAntiTheft: '$currentPassword off',
-  getTemperature: '$currentPassword temp',
-  simCardCredit: '$currentPassword credit',
-  deviceAntenQuality: '$currentPassword antenna',
-  getAdminList: '$currentPassword radmin',
-  resetFactory: '$currentPassword freset',
-  changeDevicePassword: '$currentPassword $newPassword $currentPassword'
+  setAdmin: '$currentPassword*hooda*admin*$adminIndex*$mobile',
+  activateAntiTheft: '$currentPassword*on',
+  deactivateAntiTheft: '$currentPassword*off',
+  getTemperature: '$currentPassword*temp',
+  simCardCredit: '$currentPassword*credit',
+  deviceAntenQuality: '$currentPassword*antenna',
+  getAdminList: '$currentPassword*radmin',
+  removeAdmin: '$currentPassword*hooda*admin*$adminIndex*0',
+  resetFactory: '$currentPassword*freset',
+  changeDevicePassword: '$currentPassword*np*$newPassword'
 })
 export const mutations = {
   setCurrentPassword (state, password) {

@@ -100,6 +100,7 @@ export default {
     this.$nuxt.$on('error', () => {
       this.loading = false
       this.login.password = ''
+      this.$refs.userLoginForm.resetValidation()
     })
   },
   beforeDestroy () {

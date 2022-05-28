@@ -8,7 +8,8 @@ export const state = () => ({
   simCardCredit: 'اعتبار سیم‌کارت',
   deviceAntenQuality: 'کیفیت آنتن‌دهی دستگاه',
   getTemperature: 'دریافت دما',
-  getAdminList: 'دریافت لیست مدیرها'
+  getAdminList: 'دریافت لیست مدیرها',
+  removeAdmin: 'حذف مدیر'
 })
 export const mutations = {
 
