@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <h4 class="text--primary mb-4 text-center">
-      {{ stepTitle }} {{ simInfo }}
+    <h4 class="text--primary mb-4 text-center" @click="getAppHash">
+      {{ stepTitle }}
     </h4>
     <v-row align="center" justify="center" class="mt-4">
       <v-col cols="12" md="4">
@@ -185,7 +185,7 @@
               </v-stepper-content>
               <v-stepper-content step="4" class="px-0">
                 <p class="text-body-1">
-                  یک پیامک جهت ثبت شماره شما به دستگاه ارسال شده است. لطفا تا زمان دریافت پیامک تایید صبر کنید.
+                  یک پیامک جهت ثبت شماره شما به دستگاه ارسال شده است. لطفا تا زمان دریافت پیامک تایید صبر کنید. سپس دکمه زیر را بزنید.
                 </p>
                 <div class="spinner">
                   <div class="rect1" />
@@ -297,9 +297,6 @@ export default {
     }
   },
   created () {
-    this.$nuxt.$on('error', () => {
-      this.loading = false
-    })
     this.$nuxt.$on('deviceChecked', (resp) => {
       this.loading = false
       if (resp.status === 200) {
@@ -321,6 +318,19 @@ export default {
     this.$nuxt.$off('deviceAdded')
   },
   methods: {
+    getAppHash () {
+      console.log(SmsRetriever)
+      try {
+        this.SmsRetriever.getAppHash()
+          .then(res => console.log(res))
+          .catch(error => console.error(error))
+        this.$nuxt.$on('error', () => {
+          this.loading = false
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    },
     getSimInfo () {
       const self = this
       Sim.getSimInfo().then(
