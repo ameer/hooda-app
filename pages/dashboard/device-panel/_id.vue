@@ -120,42 +120,43 @@ export default {
     },
     runCommand (command) {
       this.checkAndSend(this.device.sim_number, command)
-      this.startWatching()
+      this.startWatching(command)
     },
     startWatching () {
       SmsRetriever.startWatching().then((res) => {
-        this.$nuxt.$emit('messageReceived', res.Message)
+        this.$nuxt.$emit(`messageReceived-${this.command.name}`, res.Message)
       }).catch((err) => {
         // eslint-disable-next-line no-console
-        this.$nuxt.$emit('messageNotReceived', err)
+        this.$nuxt.$emit(`messageNotReceived-${this.command.name}`, err)
       })
     },
-    sendSMS (number, message) {
+    sendSMS (number, command) {
       const self = this
+      const message = this.$store.getters['commands/getCommand'](command.name)
       SMS.send(number, message, { android: { intent: '', slot: 0 } })
         .then(() => {
           self.$toast.success('پیامک با موفقیت ارسال شد.')
         })
         .catch((err) => {
           self.$toast.error('مشکلی در ارسال پیامک به وجود آمده است.' + err)
-          this.$nuxt.$emit('messageNotReceived', err)
+          this.$nuxt.$emit(`messageNotReceived-${command.name}`, err)
         })
     },
-    checkAndSend (number, message) {
+    checkAndSend (number, command) {
       const self = this
       const success = function (hasPermission) {
         if (hasPermission) {
-          self.sendSMS(number, message)
+          self.sendSMS(number, command)
         } else {
           AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.SEND_SMS).then(() => {
-            self.sendSMS(number, message)
+            self.sendSMS(number, command)
           }).catch((err) => {
             self.$toast.error(JSON.stringify(err))
-            this.$nuxt.$emit('messageNotReceived', err)
+            this.$nuxt.$emit(`messageNotReceived-${command.name}`, err)
           })
         }
       }
-      const error = function (err) { this.$toast.error('Something went wrong:' + err); this.$nuxt.$emit('messageNotReceived', err) }
+      const error = function (err) { this.$toast.error('Something went wrong:' + err); this.$nuxt.$emit(`messageNotReceived-${command.name}`, err) }
       SMS.hasPermission(success, error)
     }
 

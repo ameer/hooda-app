@@ -10,13 +10,13 @@
             <div class="text-body-1 font-weight-bold">
               {{ $store.getters['i18n/getTranslate'](command.name) }}
             </div>
-            <div class="text-body-2">
+            <div class="text-body-2 mt-3">
               {{ message }}
             </div>
           </v-col>
         </v-row>
       </v-container>
-      <div class="confirm-btn" :class="{'active': active}" @click.stop="runCommand($store.getters['commands/getCommand'](command.name))">
+      <div class="confirm-btn" :class="{'active': active}" @click.stop="runCommand(command)">
         <div v-show="!loading" class="text-body-2 white--text">
           ارسال پیامک
         </div>
@@ -46,20 +46,20 @@ export default {
     }
   },
   created () {
-    this.$nuxt.$on('messageReceived', (message) => {
+    this.$nuxt.$on(`messageReceived-${this.command.name}`, (message) => {
       this.active = false
       this.loading = false
       this.message = message
     })
-    this.$nuxt.$on('messageNotReceived', (err) => {
+    this.$nuxt.$on(`messageNotReceived-${this.command.name}`, (err) => {
       this.active = false
       this.loading = false
       this.message = err
     })
   },
   beforeDestroy () {
-    this.$nuxt.$off('messageReceived')
-    this.$nuxt.$off('messageNotReceived')
+    this.$nuxt.$off(`messageReceived-${this.command.name}`)
+    this.$nuxt.$off(`messageNotReceived-${this.command.name}`)
   },
   methods: {
     toggleActive () {
