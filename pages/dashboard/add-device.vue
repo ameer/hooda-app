@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 <template>
   <v-container>
-    <h4 class="text--primary mb-4 text-center" @click="getAppHash">
+    <h4 class="text--primary mb-4 text-center">
       {{ stepTitle }}
     </h4>
     <v-row align="center" justify="center" class="mt-4">
@@ -21,19 +22,10 @@
           <v-stepper-items class="accent">
             <v-stepper-content step="1" class="px-0">
               <v-form ref="checkDeviceForm" v-model="valid.checkDeviceForm" @submit.prevent="checkDevice">
-                <v-select
-                  v-model="formData.deviceType"
-                  :items="deviceTypes"
-                  filled
-                  rounded
-                  label="نوع دستگاه"
-                  dense
-                  tabindex="1"
-                />
                 <v-text-field
                   v-model="formData.serialNumber"
                   dir="auto"
-                  class="mb-4"
+                  class="mb-2"
                   filled
                   flat
                   maxlength="16"
@@ -47,8 +39,11 @@
                   prepend-inner-icon="mdi-barcode"
                   rounded
                   hide-details="auto"
-                  tabindex="2"
+                  tabindex="1"
                 />
+                <v-btn rounded color="info darken-2" class="mx-auto mb-6 d-block" @click="askUser">
+                  اسکن بارکد با دوربین
+                </v-btn>
                 <v-btn
                   dark
                   block
@@ -58,7 +53,7 @@
                   :disabled="!valid.checkDeviceForm"
                   :loading="loading"
                   type="submit"
-                  tabindex="3"
+                  tabindex="2"
                 >
                   <span class="font-weight-bold text-body-1">مرحله بعد</span>
                 </v-btn>
@@ -214,6 +209,7 @@
   </v-container>
 </template>
 <script>
+import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
 import { Sim } from '@ionic-native/sim'
 import { SMS } from '@awesome-cordova-plugins/sms'
 import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
@@ -242,12 +238,7 @@ export default {
         serialNumber: '',
         simCardNumber: '',
         location: ''
-      },
-      deviceTypes: [
-        { text: 'پایش امنیت هوشمند', value: 0 },
-        { text: 'تشخیص دود هوشمند', value: 1 },
-        { text: 'دزدگیر هوشمند', value: 2 }
-      ]
+      }
     }
   },
   computed: {
@@ -318,17 +309,99 @@ export default {
     this.$nuxt.$off('deviceAdded')
   },
   methods: {
-    getAppHash () {
-      console.log(SmsRetriever)
-      try {
-        this.SmsRetriever.getAppHash()
-          .then(res => console.log(res))
-          .catch(error => console.error(error))
-        this.$nuxt.$on('error', () => {
-          this.loading = false
-        })
-      } catch (error) {
-        console.log(error)
+    async didUserGrantPermission () {
+      // check if user already granted permission
+      const status = await BarcodeScanner.checkPermission({ force: false })
+      if (status.granted) {
+        // user granted permission
+        return true
+      }
+      if (status.denied) {
+        // user denied permission
+        return false
+      }
+      if (status.asked) {
+        // system requested the user for permission during this call
+        // only possible when force set to true
+      }
+      if (status.neverAsked) {
+        // user has not been requested this permission before
+        // it is advised to show the user some sort of prompt
+        // this way you will not waste your only chance to ask for the permission
+        const c = confirm(
+          'برای اسکن بارکد لازم است که اجازه دسترسی به دوربین را به برنامه بدهید'
+        )
+        if (!c) {
+          return false
+        }
+      }
+      if (status.restricted || status.unknown) {
+        // ios only
+        // probably means the permission has been denied
+        return false
+      }
+      // user has not denied permission
+      // but the user also has not yet granted the permission
+      // so request it
+      const statusRequest = await BarcodeScanner.checkPermission({ force: true })
+      if (statusRequest.asked) {
+        // system requested the user for permission during this call
+        // only possible when force set to true
+      }
+      if (statusRequest.granted) {
+        // the user did grant the permission now
+        return true
+      }
+      // user did not grant the permission, so he must have declined the request
+      return false
+    },
+    async checkPermission () {
+      const status = await BarcodeScanner.checkPermission()
+      if (status.denied) {
+        // the user denied permission for good
+        // redirect user to app settings if they want to grant it anyway
+        const c = confirm(
+          'برای اسکن بارکد از طریق تنظیمات تلفن به برنامه اجازه دسترسی به دوربین را بدهید.'
+        )
+        if (c) {
+          BarcodeScanner.openAppSettings()
+        }
+      }
+    },
+    prepare  () {
+      BarcodeScanner.prepare()
+    },
+    hideBackground () {
+      document.getElementById('main-container').style.visibility = 'hidden'
+      document.querySelector('main').classList.remove('accent')
+      document.querySelector('main').classList.add('transparent')
+      document.querySelector('#app').setAttribute('style', 'background-color: transparent !important;')
+    },
+    showBackground () {
+      document.getElementById('main-container').style.visibility = 'visible'
+      document.querySelector('main').classList.add('accent')
+      document.querySelector('main').classList.remove('transparent')
+      document.querySelector('#app').removeAttribute('style', 'background-color: transparent !important;')
+    },
+    async startScan  () {
+      this.hideBackground()
+      const result = await BarcodeScanner.startScan()
+      if (result.hasContent) {
+        this.stopScan()
+        this.formData.serialNumber = result.content
+      }
+    },
+    stopScan  () {
+      this.showBackground()
+      BarcodeScanner.stopScan()
+    },
+    async askUser () {
+      this.prepare()
+      const c = await this.didUserGrantPermission()
+      if (c) {
+        this.startScan()
+      } else {
+        this.stopScan()
       }
     },
     getSimInfo () {

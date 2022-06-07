@@ -2,8 +2,6 @@
   <v-app light>
     <v-navigation-drawer
       v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
       fixed
       right
       app
@@ -17,6 +15,14 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title v-text="item.title" />
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item @click="logout">
+          <v-list-item-action>
+            <v-icon>mdi-logout</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="'خروج'" />
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -49,7 +55,17 @@
       </v-btn> -->
     </v-app-bar>
     <v-main class="accent" style="padding-bottom:128px;">
-      <v-container class="h-100">
+      <div id="scanner-frame" />
+      <v-alert v-if="needsUpdate" type="info" tile class="mb-0" icon="mdi-update">
+        <div class="d-flex">
+          بروزرسانی در دسترس است.
+          <v-spacer />
+          <v-btn small color="success" href="http://192.168.117.174:8000/app/latest.apk" target="_blank" rounded>
+            دانلود و نصب
+          </v-btn>
+        </div>
+      </v-alert>
+      <v-container id="main-container" class="h-100">
         <Nuxt />
       </v-container>
     </v-main>
@@ -57,7 +73,7 @@
       <v-container id="mobile-nav-menu-container">
         <v-row align="center" justify="space-around" class="flex-wrap">
           <v-btn
-            v-for="(btn, i) in items"
+            v-for="(btn, i) in mobileNavItems"
             :key="`mobile-nav-item-${i}`"
             :large="btn.isCenter"
             fab
@@ -92,14 +108,15 @@ export default {
   middleware: 'authenticated',
   data () {
     return {
-      clipped: false,
       drawer: false,
-      fixed: false,
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
       title: 'هــودا',
       items: [
+        {
+          icon: 'mdi-pencil',
+          title: 'ویرایش اطلاعات کاربری',
+          to: 'user/edit-profile',
+          sidebarOnly: true
+        },
         {
           icon: 'mdi-share-variant',
           title: 'معرفی به دوستان',
@@ -143,9 +160,16 @@ export default {
     },
     isKeyboardShown () {
       return this.$store.state.isKeyboardShown
+    },
+    mobileNavItems () {
+      return this.items.filter(item => !item.sidebarOnly)
+    },
+    needsUpdate () {
+      return this.$store.state.needsUpdate
     }
   },
   async mounted () {
+    this.$store.dispatch('checkNeedsUpdate', this)
     this.$store.commit('setPlatform', Capacitor.getPlatform())
     const devices = await this.getDataFromLocal('devices')
     this.$store.commit('setDevices', devices)
@@ -173,6 +197,10 @@ export default {
     this.$nuxt.$off('updateUser', this.updateUser)
   },
   methods: {
+    logout () {
+      this.$auth.$storage.removeUniversal('user')
+      this.$auth.logout()
+    },
     goBack () {
       this.$router.back()
     },
@@ -254,6 +282,7 @@ export default {
     updateUser (key, value) {
       const user = { ...this.$auth.user }
       user[key] = value
+      this.$auth.$storage.setUniversal('user', user)
       this.$auth.setUser(user)
     },
     saveDeviceToLocal (device) {

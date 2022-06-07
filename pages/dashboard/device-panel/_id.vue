@@ -63,6 +63,12 @@ export default {
     }
   },
   computed: {
+    appHash () {
+      return this.$store.state.appHash
+    },
+    simCardSlot () {
+      return this.$auth.user.simCardSlot ? this.$auth.user.simCardSlot : 0
+    },
     deviceName () {
       if ('type' in this.device) {
         return this.items[this.device.type].title
@@ -89,6 +95,7 @@ export default {
     // const self = this
     // self.getDeviceData()
     // self.timerId = setInterval(self.getDeviceData, 20000)
+    this.$store.dispatch('getAppHash')
     this.commands = this.$store.getters['commands/getUserCommands']()
     this.$nuxt.$emit('getDeviceById', this.$route.params.id, 'deviceRecieved')
     this.loading = true
@@ -132,8 +139,8 @@ export default {
     },
     sendSMS (number, command) {
       const self = this
-      const message = this.$store.getters['commands/getCommand'](command.name)
-      SMS.send(number, message, { android: { intent: '', slot: 0 } })
+      const message = self.$store.getters['commands/getCommand'](command.name) + '\n' + self.appHash
+      SMS.send(number, message, { android: { intent: '', slot: self.simCardSlot } })
         .then(() => {
           self.$toast.success('پیامک با موفقیت ارسال شد.')
         })
