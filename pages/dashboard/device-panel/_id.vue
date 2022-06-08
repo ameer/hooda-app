@@ -129,17 +129,20 @@ export default {
       this.checkAndSend(this.device.sim_number, command)
       this.startWatching(command)
     },
-    startWatching () {
+    startWatching (command) {
+      this.$store.commit('setIsWatchingForSMS', true)
       SmsRetriever.startWatching().then((res) => {
-        this.$nuxt.$emit(`messageReceived-${this.command.name}`, res.Message)
+        this.$nuxt.$emit(`messageReceived-${command.name}`, res.Message)
       }).catch((err) => {
         // eslint-disable-next-line no-console
-        this.$nuxt.$emit(`messageNotReceived-${this.command.name}`, err)
+        this.$nuxt.$emit(`messageNotReceived-${command.name}`, err)
+      }).finally(() => {
+        this.$store.commit('setIsWatchingForSMS', false)
       })
     },
     sendSMS (number, command) {
       const self = this
-      const message = self.$store.getters['commands/getCommand'](command.name) + '\n' + self.appHash
+      const message = self.$store.getters['commands/getCommand'](command.name) // + '\n' + self.appHash // For next version
       SMS.send(number, message, { android: { intent: '', slot: self.simCardSlot } })
         .then(() => {
           self.$toast.success('پیامک با موفقیت ارسال شد.')

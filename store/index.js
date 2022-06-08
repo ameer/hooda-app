@@ -12,7 +12,9 @@ export const state = () => ({
   platform: 'web',
   loading: false,
   appHash: '',
-  needsUpdate: false
+  needsUpdate: false,
+  isWatchingForSMS: false,
+  isScanningBarcode: false
 })
 
 export const mutations = {
@@ -45,6 +47,12 @@ export const mutations = {
   },
   setNeedsUpdate (state, status) {
     state.needsUpdate = status
+  },
+  setIsWatchingForSMS (state, status) {
+    state.isWatchingForSMS = status
+  },
+  setIsScanningBarcode (state, status) {
+    state.isScanningBarcode = status
   }
 }
 export const actions = {

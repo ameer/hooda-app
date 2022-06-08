@@ -10,8 +10,8 @@
             <div class="text-body-1 font-weight-bold">
               {{ $store.getters['i18n/getTranslate'](command.name) }}
             </div>
-            <div class="text-body-2 mt-3">
-              {{ message }}
+            <div v-if="message" class="mt-3">
+              <span class="text-body-2">پاسخ دستگاه: </span><span class="text-body-2 font-weight-bold">{{ message }}</span>
             </div>
           </v-col>
         </v-row>
@@ -45,11 +45,19 @@ export default {
       message: ''
     }
   },
+  computed: {
+    appHash () {
+      return this.$store.state.appHash
+    },
+    isWatchingForSMS () {
+      return this.$store.state.isWatchingForSMS
+    }
+  },
   created () {
     this.$nuxt.$on(`messageReceived-${this.command.name}`, (message) => {
       this.active = false
       this.loading = false
-      this.message = message
+      this.message = message.replace(this.appHash, '')
     })
     this.$nuxt.$on(`messageNotReceived-${this.command.name}`, (err) => {
       this.active = false
@@ -66,9 +74,14 @@ export default {
       this.active = !this.active
     },
     runCommand (command) {
-      this.loading = true
-      this.message = ''
-      this.$emit('run', command)
+      if (!this.isWatchingForSMS) {
+        this.loading = true
+        this.message = ''
+        this.$emit('run', command)
+      } else {
+        this.$toast.error('برنامه در انتظار دریافت پیامک است. لطفاْ چند لحظه بعد تلاش کنید.')
+        this.active = false
+      }
     }
   }
 }

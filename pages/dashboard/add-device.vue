@@ -163,7 +163,7 @@
                   </div>
                   <div v-else>
                     <p class="text-body-1">
-                      پیامک تایید از طریق سیمکارت <span class="faNum">{{ user.simCardSlot }}</span> ارسال می شود.
+                      پیامک تایید از طریق سیمکارت <span class="faNum">{{ user.simCardSlot + 1 }}</span> ارسال می شود.
                     </p>
                     <v-btn
                       block
@@ -171,7 +171,7 @@
                       rounded
                       color="green darken-3"
                       :loading="loading"
-                      @click="submitSMSConfirmStep"
+                      @click="submitSMSConfirmStep(false)"
                     >
                       <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
                     </v-btn>
@@ -179,9 +179,24 @@
                 </div>
               </v-stepper-content>
               <v-stepper-content step="4" class="px-0">
-                <p class="text-body-1">
-                  یک پیامک جهت ثبت شماره شما به دستگاه ارسال شده است. لطفا تا زمان دریافت پیامک تایید صبر کنید. سپس دکمه زیر را بزنید.
+                <p v-if="!showManualConfirm" class="text-body-1">
+                  یک پیامک جهت ثبت شماره شما به دستگاه ارسال شده است. لطفا تا زمان دریافت پیامک تایید صبر کنید.
                 </p>
+                <div v-else>
+                  <p class="text-body-1">
+                    چنانچه پیامک تایید را از دستگاه دریافت کرده‌اید، دکمه زیر را بزنید.
+                  </p>
+                  <v-btn
+                    block
+                    large
+                    rounded
+                    color="green darken-3"
+                    :loading="loading"
+                    @click="step = 5"
+                  >
+                    <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                  </v-btn>
+                </div>
                 <div class="spinner">
                   <div class="rect1" />
                   <div class="rect2" />
@@ -238,7 +253,8 @@ export default {
         serialNumber: '',
         simCardNumber: '',
         location: ''
-      }
+      },
+      showManualConfirm: false
     }
   },
   computed: {
@@ -384,6 +400,7 @@ export default {
       document.querySelector('#app').removeAttribute('style', 'background-color: transparent !important;')
     },
     async startScan  () {
+      this.$store.commit('setIsScanningBarcode', true)
       this.hideBackground()
       const result = await BarcodeScanner.startScan()
       if (result.hasContent) {
@@ -392,6 +409,7 @@ export default {
       }
     },
     stopScan  () {
+      this.$store.commit('setIsScanningBarcode', false)
       this.showBackground()
       BarcodeScanner.stopScan()
     },
@@ -438,8 +456,8 @@ export default {
       }
       this.step = 3
     },
-    submitSMSConfirmStep () {
-      if (this.isDualSim) {
+    submitSMSConfirmStep (validate = true) {
+      if (this.isDualSim && validate) {
         if (!this.$refs.dualSimForm.validate()) { return false }
         this.$emit('setSimCardSlot', this.selectedSlot)
       }
@@ -448,13 +466,19 @@ export default {
       this.startWatching()
     },
     startWatching () {
+      setTimeout(() => {
+        this.showManualConfirm = true
+      }, 30 * 1000)
       SmsRetriever.startWatching().then((res) => {
-        this.saveDeviceToLocal()
-        this.step = 5
+        this.manualSMSConfirm()
       }).catch((err) => {
         // eslint-disable-next-line no-console
         console.log(err)
       })
+    },
+    manualSMSConfirm () {
+      this.saveDeviceToLocal()
+      this.step = 5
     },
     sendSMS (number, message) {
       const self = this

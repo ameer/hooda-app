@@ -321,7 +321,7 @@ export default {
     this.$nuxt.$on('userRegistered', async (resp) => {
       this.loading = false
       await this.$auth.setUserToken(resp.data.access_token)
-      this.$nuxt.$emit('userLoggedIn')
+      this.$nuxt.$emit('userLoggedIn', resp.data.user)
     })
   },
   beforeDestroy () {

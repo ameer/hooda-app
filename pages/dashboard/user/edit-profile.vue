@@ -80,7 +80,7 @@ export default {
   },
   created () {
     this.$nuxt.$on('userUpdated', (response) => {
-      this.$auth.setUser(response.data.user)
+      this.$nuxt.$emit('updateUser', 'user', 'user', true, response.data.user)
       this.$toast.success(response.data.message)
       this.loading = false
     })

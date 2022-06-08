@@ -55,7 +55,7 @@
       </v-btn> -->
     </v-app-bar>
     <v-main class="accent" style="padding-bottom:128px;">
-      <div id="scanner-frame" />
+      <div v-show="isScanning" id="scanner-frame" />
       <v-alert v-if="needsUpdate" type="info" tile class="mb-0" icon="mdi-update">
         <div class="d-flex">
           بروزرسانی در دسترس است.
@@ -152,6 +152,9 @@ export default {
     }
   },
   computed: {
+    isScanning () {
+      return this.$store.state.isScanningBarcode
+    },
     isDashboard () {
       return this.$route.name === 'dashboard'
     },
@@ -279,11 +282,16 @@ export default {
       }
       return msg
     },
-    updateUser (key, value) {
-      const user = { ...this.$auth.user }
-      user[key] = value
-      this.$auth.$storage.setUniversal('user', user)
-      this.$auth.setUser(user)
+    updateUser (key, value, replaceAll = false, user = {}) {
+      if (replaceAll) {
+        this.$auth.$storage.setUniversal('user', user)
+        this.$auth.setUser(user)
+      } else {
+        const user = { ...this.$auth.user }
+        user[key] = value
+        this.$auth.$storage.setUniversal('user', user)
+        this.$auth.setUser(user)
+      }
     },
     saveDeviceToLocal (device) {
       const devices = this.$store.state.devices
