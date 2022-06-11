@@ -177,6 +177,18 @@
                     </v-btn>
                   </div>
                 </div>
+                <div v-else>
+                  <v-btn
+                    block
+                    large
+                    rounded
+                    color="green darken-3"
+                    :loading="loading"
+                    @click="submitSMSConfirmStep(false)"
+                  >
+                    <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
+                  </v-btn>
+                </div>
               </v-stepper-content>
               <v-stepper-content step="4" class="px-0">
                 <p v-if="!showManualConfirm" class="text-body-1">
@@ -233,6 +245,7 @@ export default {
   layout: 'dashboard',
   data () {
     return {
+      bodyStyle: '',
       loading: false,
       valid: {
         checkDeviceForm: false,
@@ -392,12 +405,14 @@ export default {
       document.querySelector('main').classList.remove('accent')
       document.querySelector('main').classList.add('transparent')
       document.querySelector('#app').setAttribute('style', 'background-color: transparent !important;')
+      document.querySelector('body').setAttribute('style', 'background-color: transparent !important;')
     },
     showBackground () {
       document.getElementById('main-container').style.visibility = 'visible'
       document.querySelector('main').classList.add('accent')
       document.querySelector('main').classList.remove('transparent')
-      document.querySelector('#app').removeAttribute('style', 'background-color: transparent !important;')
+      document.querySelector('#app').removeAttribute('style')
+      document.querySelector('body').removeAttribute('style')
     },
     async startScan  () {
       this.$store.commit('setIsScanningBarcode', true)

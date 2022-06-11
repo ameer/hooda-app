@@ -3,7 +3,7 @@ import { Sim } from '@ionic-native/sim'
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions'
 import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
 export const state = () => ({
-  appVersion: '1.0.0',
+  appVersion: '1.0.2',
   onlineStatus: false,
   devices: {},
   selectedDevice: null,
@@ -85,10 +85,12 @@ export const actions = {
       console.log(error)
     }
   },
-  checkNeedsUpdate ({ commit }, { $axios, $toast }) {
+  checkNeedsUpdate ({ commit, state }, { $axios, $toast }) {
     $axios.get('app/version')
       .then((res) => {
-        commit('setNeedsUpdate', res.data.needsUpdate)
+        if (res.data.needsUpdate && res.data.version !== state.appVersion) {
+          commit('setNeedsUpdate', res.data.needsUpdate)
+        }
         if (res.data.showMessage) {
           $toast.info(res.data.message, {
             timeout: 0,
