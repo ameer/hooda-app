@@ -17,10 +17,11 @@ export const mutations = {
   }
 }
 export const getters = {
-  getCommand: state => (command, adminIndex = 1) => {
-    let commandString = (state[command]).replaceAll('$currentPassword', state.currentPassword)
-    if (command === 'setAdmin') {
-      commandString = commandString.replace('$adminIndex', adminIndex)
+  getCommand: state => (command) => {
+    let commandString = (state[command.name]).replaceAll('$currentPassword', state.currentPassword)
+    if (command.name === 'setAdmin') {
+      commandString = commandString.replace('$adminIndex', command.adminIndex)
+      commandString = commandString.replace('$mobile', command.adminPhone)
     }
     return commandString
   },
@@ -35,5 +36,10 @@ export const getters = {
       }
     }
     return commandsArray
+  }
+}
+export const actions = {
+  setPassword ({ commit }, password) {
+    commit('setCurrentPassword', password)
   }
 }

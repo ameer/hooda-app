@@ -41,7 +41,7 @@
                   hide-details="auto"
                   tabindex="1"
                 />
-                <v-btn rounded color="info darken-2" class="mx-auto mb-6 d-block" @click="askUser">
+                <v-btn v-if="platform !== 'web'" rounded color="info darken-2" class="mx-auto mb-6 d-block" @click="askUser">
                   اسکن بارکد با دوربین
                 </v-btn>
                 <v-btn

@@ -1,5 +1,6 @@
 <template>
   <section id="single-device-page">
+    <confirm-action :dialog="dialog" :dialog-title="dialogTitle" :dialog-message="dialogMessage" @closeDialog="dialog = false" @actionConfirmed="deleteDevice" />
     <v-container v-if="device !== null" class="h-100 pa-0">
       <div class="text-h5 font-weight-bold text--secondary mt-4 mb-4 text-center">
         ویرایش دستگاه
@@ -74,6 +75,26 @@
               </v-form>
             </v-card-text>
           </v-card>
+          <v-card class="device-card mt-4" rounded="xl">
+            <v-alert type="error" class="mb-0">
+              محدوده خطر
+            </v-alert>
+            <v-card-text>
+              <p class="text-body-1">
+                با انتخاب گزینه زیر دستگاه از حساب کاربری شما حذف خواهد شد.
+              </p>
+              <v-btn
+                outlined
+                rounded
+                color="error"
+                :loading="loading"
+                class="mr-auto d-block"
+                @click="confirmDelete"
+              >
+                حذف دستگاه
+              </v-btn>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
     </v-container>
@@ -85,10 +106,17 @@
   </section>
 </template>
 <script>
+import ConfirmAction from '~/components/dialogs/confirmAction.vue'
 export default {
+  components: {
+    ConfirmAction
+  },
   layout: 'dashboard',
   data () {
     return {
+      dialog: false,
+      dialogTitle: 'حذف دستگاه',
+      dialogMessage: 'آیا مطمئن هستید که می‌خواهید دستگاه موردنظر را حذف کنید؟ این کار غیرقابل بازگشت است.',
       device: null,
       loading: false,
       valid: {
@@ -128,16 +156,31 @@ export default {
       this.$toast.success('دستگاه با موفقیت بروزرسانی شد!')
       this.$nuxt.$emit('saveDeviceToLocal', resp.data.device)
     })
+    this.$nuxt.$on('deviceDeleted', (resp) => {
+      this.loading = false
+      this.$toast.success('دستگاه با موفقیت حذف شد!')
+      this.$nuxt.$emit('removeDeviceFromLocal', this.$route.params.id)
+      this.$router.push('/dashboard')
+    })
   },
   beforeDestroy () {
     this.$nuxt.$off('deviceRecieved')
     this.$nuxt.$off('error')
     this.$nuxt.$off('deviceUpdated')
+    this.$nuxt.$off('deviceDeleted')
   },
   methods: {
+    confirmDelete () {
+      this.dialog = true
+    },
     updateDevice () {
       this.loading = true
       this.$nuxt.$emit('putReq', `user/update-device/${this.$route.params.id}`, 'deviceUpdated', this.formData)
+    },
+    deleteDevice () {
+      this.dialog = false
+      this.loading = true
+      this.$nuxt.$emit('deleteReq', `user/delete-device/${this.$route.params.id}`, 'deviceDeleted')
     }
   }
 }

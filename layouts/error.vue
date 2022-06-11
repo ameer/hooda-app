@@ -1,14 +1,24 @@
 <template>
-  <v-app dark>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ error }}
-    </h1>
-    <NuxtLink to="/">
-      Home page
-    </NuxtLink>
+  <v-app>
+    <v-container class="h-100">
+      <v-row justify="center" class="h-100">
+        <v-col cols="12" sm="9" md="6" lg="4" class="h-100 text-center">
+          <div v-if="error.statusCode === 404" class="text--secondary">
+            <h1>
+              {{ pageNotFound }}
+            </h1>
+          </div>
+          <div v-else class="text--secondary">
+            <h1>
+              {{ error }}
+            </h1>
+          </div>
+          <v-btn color="green darken-1" class="mt-8" dark @click="backOrReload">
+            بازگشت به صفحه قبل
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-app>
 </template>
 
@@ -23,8 +33,8 @@ export default {
   },
   data () {
     return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred'
+      pageNotFound: 'صفحه موردنظر در دسترس نیست',
+      otherError: 'خطایی در اپلیکیشن رخ داده است.'
     }
   },
   head () {
@@ -32,6 +42,15 @@ export default {
       this.error.statusCode === 404 ? this.pageNotFound : this.otherError
     return {
       title
+    }
+  },
+  methods: {
+    backOrReload () {
+      if (this.error.statusCode === 404) {
+        this.$router.go(-1)
+      } else {
+        this.$router.go(this.$router.currentRoute)
+      }
     }
   }
 }

@@ -8,10 +8,10 @@ const config: CapacitorConfig = {
       sound: "beep.wav",
     },
   },
-  "server": {
-    "url": "http://192.168.42.182:3000",
-    "cleartext": true
-  },
+  // "server": {
+  //   "url": "http://192.168.42.182:3000",
+  //   "cleartext": true
+  // },
   appId: 'io.hooda.app',
   appName: 'hooda',
   webDir: 'dist',

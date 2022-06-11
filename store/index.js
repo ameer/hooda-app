@@ -27,6 +27,9 @@ export const mutations = {
   updateDevicesList (state, device) {
     state.devices[device.uuid] = device
   },
+  removeDeviceFromListBYUUID (state, uuid) {
+    delete state.devices[uuid]
+  },
   setDevices (state, devices) {
     state.devices = devices
   },

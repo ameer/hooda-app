@@ -9,14 +9,25 @@
       <user-avatar :user="user" />
       <v-divider class="mt-4" />
       <v-list class="">
-        <v-list-item v-for="(item, i) in items" :key="i" :to="`/dashboard/${item.to}`" nuxt exact>
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
+        <template v-for="(item, i) in items">
+          <v-list-item v-if="item.isLink" :key="`side-nav-link-${i}`" :to="`/dashboard/${item.to}`" nuxt exact>
+            <v-list-item-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title" />
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-else :key="`side-nav-btn-${i}`" @click="item.action">
+            <v-list-item-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title" />
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+
         <v-list-item @click="logout">
           <v-list-item-action>
             <v-icon>mdi-logout</v-icon>
@@ -60,7 +71,7 @@
         <div class="d-flex">
           بروزرسانی در دسترس است.
           <v-spacer />
-          <v-btn small color="success" href="http://192.168.117.174:8000/app/latest.apk" target="_blank" rounded>
+          <v-btn small color="success" href="https://api.hoodaiot.ir/app/latest.apk" target="_blank" rounded>
             دانلود و نصب
           </v-btn>
         </div>
@@ -72,22 +83,39 @@
     <div id="mobile-nav" :class="isKeyboardShown ? 'keyboard-open' : ''" class="d-flex d-md-none">
       <v-container id="mobile-nav-menu-container">
         <v-row align="center" justify="space-around" class="flex-wrap">
-          <v-btn
-            v-for="(btn, i) in mobileNavItems"
-            :key="`mobile-nav-item-${i}`"
-            :large="btn.isCenter"
-            fab
-            dark
-            :elevation="btn.isCenter ? 4 : 0"
-            color="#006090"
-            :class="{'center-fab' : btn.isCenter}"
-            :to="`/dashboard/${btn.isCenter && isDashboard ? btn.dashboardIcon.to : btn.to}`"
-            exact
-          >
-            <v-icon style="font-size:30px">
-              {{ btn.isCenter && isDashboard ? btn.dashboardIcon.icon : btn.icon }}
-            </v-icon>
-          </v-btn>
+          <template v-for="(btn, i) in mobileNavItems">
+            <v-btn
+              v-if="btn.isLink"
+              :key="`mobile-nav-item-${i}`"
+              :large="btn.isCenter"
+              fab
+              dark
+              :elevation="btn.isCenter ? 4 : 0"
+              color="#006090"
+              :class="{'center-fab' : btn.isCenter}"
+              :to="`/dashboard/${btn.isCenter && isDashboard ? btn.dashboardIcon.to : btn.to}`"
+              exact
+            >
+              <v-icon style="font-size:30px">
+                {{ btn.isCenter && isDashboard ? btn.dashboardIcon.icon : btn.icon }}
+              </v-icon>
+            </v-btn>
+            <v-btn
+              v-else
+              :key="`mobile-nav-button-${i}`"
+              :large="btn.isCenter"
+              fab
+              dark
+              :elevation="btn.isCenter ? 4 : 0"
+              color="#006090"
+              :class="{'center-fab' : btn.isCenter}"
+              @click="btn.action"
+            >
+              <v-icon style="font-size:30px">
+                {{ btn.isCenter && isDashboard ? btn.dashboardIcon.icon : btn.icon }}
+              </v-icon>
+            </v-btn>
+          </template>
         </v-row>
       </v-container>
       <div class="mobile_navigation_bg">
@@ -99,6 +127,7 @@
 
 <script>
 import { Capacitor } from '@capacitor/core'
+import { Share } from '@capacitor/share'
 import { Storage } from '@capacitor/storage'
 import OnlineIndicator from '~/components/onlineIndicator.vue'
 import userAvatar from '~/components/userAvatar.vue'
@@ -112,20 +141,16 @@ export default {
       title: 'هــودا',
       items: [
         {
-          icon: 'mdi-pencil',
+          icon: 'mdi-account',
           title: 'ویرایش اطلاعات کاربری',
           to: 'user/edit-profile',
-          sidebarOnly: true
-        },
-        {
-          icon: 'mdi-share-variant',
-          title: 'معرفی به دوستان',
-          to: '/'
+          isLink: true
         },
         {
           icon: 'mdi-headset',
           title: 'ارتباط با ما',
-          to: '/'
+          to: '/',
+          isLink: true
         },
         {
           dashboardIcon: {
@@ -136,17 +161,20 @@ export default {
           icon: 'mdi-home',
           title: 'دستگاه‌های من',
           isCenter: true,
-          to: ''
+          to: '',
+          isLink: true
         },
         {
           icon: 'mdi-help',
           title: 'راهنما',
-          to: 'guides'
+          to: 'guides',
+          isLink: true
         },
         {
-          icon: 'mdi-cog',
-          title: 'تنظیمات',
-          to: '/'
+          icon: 'mdi-share-variant',
+          title: 'معرفی به دوستان',
+          isLink: false,
+          action: this.share
         }
       ]
     }
@@ -181,7 +209,9 @@ export default {
     this.$nuxt.$on('getReq', this.getReq)
     this.$nuxt.$on('postReq', this.postReq)
     this.$nuxt.$on('putReq', this.putReq)
+    this.$nuxt.$on('deleteReq', this.deleteReq)
     this.$nuxt.$on('saveDeviceToLocal', this.saveDeviceToLocal)
+    this.$nuxt.$on('removeDeviceFromLocal', this.removeDeviceFromLocal)
     this.$nuxt.$on('saveDataToLocal', this.saveDataToLocal)
     this.$nuxt.$on('getDataFromLocal', this.getDataFromLocal)
     this.$nuxt.$on('getDeviceById', this.getDeviceById)
@@ -192,7 +222,9 @@ export default {
     this.$nuxt.$off('getReq', this.getReq)
     this.$nuxt.$off('postReq', this.postReq)
     this.$nuxt.$off('putReq', this.putReq)
+    this.$nuxt.$off('deleteReq', this.deleteReq)
     this.$nuxt.$off('saveDeviceToLocal', this.saveDeviceToLocal)
+    this.$nuxt.$off('removeDeviceFromLocal', this.removeDeviceFromLocal)
     this.$nuxt.$off('saveDataToLocal', this.saveDataToLocal)
     this.$nuxt.$off('getDataFromLocal', this.getDataFromLocal)
     this.$nuxt.$off('getDeviceById', this.getDeviceById)
@@ -200,6 +232,22 @@ export default {
     this.$nuxt.$off('updateUser', this.updateUser)
   },
   methods: {
+    async share () {
+      try {
+        await Share.share({
+          title: 'معرفی به دوستان',
+          text: 'اپلیکیشن کاربردی هودا برای مدیریت اولین دزدگیر دتکتور هوشمند و گجتی در ایران. برای دریافت اپلیکیشن روی لینک زیر بزنید',
+          url: 'https://hoodaiot.ir',
+          dialogTitle: 'اشتراک‌گذاری اپلیکیشن'
+        })
+      } catch (error) {
+        if (error.message.includes('canceled')) {
+          console.log('Share cancelled')
+        } else {
+          this.$toast.error(error.message)
+        }
+      }
+    },
     logout () {
       this.$auth.$storage.removeUniversal('user')
       this.$auth.logout()
@@ -275,6 +323,27 @@ export default {
           self.setLoading(false)
         })
     },
+    deleteReq (endpoint, event) {
+      const self = this
+      self.setLoading(true)
+      self.$axios
+        .delete(endpoint)
+        .then((response) => {
+          self.$nuxt.$emit(event, response.data)
+        })
+        .catch((err) => {
+          self.$nuxt.$emit('error')
+          let msg = ''
+          if ('errors' in err.response.data) {
+            msg = self.errMsgGenerator(err.response.data.errors)
+          } else {
+            msg = err.response.data.message
+          }
+          self.$toast.error(msg)
+        }).finally(() => {
+          self.setLoading(false)
+        })
+    },
     errMsgGenerator (errorsObject) {
       let msg = ''
       for (const key in errorsObject) {
@@ -293,9 +362,14 @@ export default {
         this.$auth.setUser(user)
       }
     },
-    saveDeviceToLocal (device) {
+    async saveDeviceToLocal (device) {
+      await this.$store.commit('updateDevicesList', device)
       const devices = this.$store.state.devices
-      this.$store.commit('updateDevicesList', device)
+      this.saveDataToLocal('devices', devices)
+    },
+    async removeDeviceFromLocal (deviceUUID) {
+      await this.$store.commit('removeDeviceFromList', deviceUUID)
+      const devices = this.$store.state.devices
       this.saveDataToLocal('devices', devices)
     },
     /*

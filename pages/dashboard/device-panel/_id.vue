@@ -1,6 +1,24 @@
 <template>
   <v-container class="h-100 px-0">
     <device-card :device="device" :i="-1" />
+    <v-card v-if="canAddNewAdmin" class="device-card mt-4" rounded="xl">
+      <add-admin-to-device
+        :admin-index="device.countOfDeviceUsers"
+        :dialog="addAdminDialog"
+        :device-id="$route.params.id"
+        @closeDialog="addAdminDialog = false"
+        @updateDevice="updateDevice"
+        @sendAdminSMS="sendAdminSMS"
+      />
+      <v-card-text>
+        <p class="text-body-1">
+          این دستگاه در حال حاضر <span class="faNum font-weight-bold">{{ device.countOfDeviceUsers }}</span> مدیر دارد.
+        </p>
+        <v-btn rounded color="primary" large class="mr-auto d-block" @click="addAdminDialog = true">
+          افزودن مدیر به دستگاه
+        </v-btn>
+      </v-card-text>
+    </v-card>
     <div class="d-flex align-center my-8">
       <div class="text-body-1">
         فرمان‌های پیامکی
@@ -32,12 +50,14 @@ import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions'
 import deviceCard from '~/components/deviceCard.vue'
 import CommandCard from '~/components/commandCard.vue'
+import AddAdminToDevice from '~/components/dialogs/addAdminToDevice.vue'
 export default {
-  components: { deviceCard, CommandCard },
+  components: { deviceCard, CommandCard, AddAdminToDevice },
   // components: { gauge, BatteryIndicator },
   layout: 'dashboard',
   data () {
     return {
+      addAdminDialog: false,
       loading: false,
       commands: [],
       device: {},
@@ -63,6 +83,9 @@ export default {
     }
   },
   computed: {
+    canAddNewAdmin () {
+      return this.device.countOfDeviceUsers < 3 && this.device.pivot.role === 1
+    },
     appHash () {
       return this.$store.state.appHash
     },
@@ -96,10 +119,9 @@ export default {
     // self.getDeviceData()
     // self.timerId = setInterval(self.getDeviceData, 20000)
     this.$store.dispatch('getAppHash')
-    this.commands = this.$store.getters['commands/getUserCommands']()
     this.$nuxt.$emit('getDeviceById', this.$route.params.id, 'deviceRecieved')
     this.loading = true
-    if ((this.device === null || this.device === undefined) && this.$store.state.onlineStatus) {
+    if (this.$store.state.onlineStatus) {
       this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}`, 'deviceRecieved')
     }
   },
@@ -110,6 +132,8 @@ export default {
     this.$nuxt.$on('deviceRecieved', (resp) => {
       this.loading = false
       this.device = resp.data
+      this.$store.dispatch('commands/setPassword', this.device.psw)
+      this.commands = this.$store.getters['commands/getUserCommands']()
     })
     this.$nuxt.$on('deviceDataRecieved', (resp) => {
       this.deviceData = resp.data
@@ -142,7 +166,7 @@ export default {
     },
     sendSMS (number, command) {
       const self = this
-      const message = self.$store.getters['commands/getCommand'](command.name) // + '\n' + self.appHash // For next version
+      const message = self.$store.getters['commands/getCommand'](command) // + '\n' + self.appHash // For next version
       SMS.send(number, message, { android: { intent: '', slot: self.simCardSlot } })
         .then(() => {
           self.$toast.success('پیامک با موفقیت ارسال شد.')
@@ -168,8 +192,14 @@ export default {
       }
       const error = function (err) { this.$toast.error('Something went wrong:' + err); this.$nuxt.$emit(`messageNotReceived-${command.name}`, err) }
       SMS.hasPermission(success, error)
+    },
+    updateDevice (device) {
+      this.device = device
+    },
+    sendAdminSMS (adminPhone) {
+      console.log(adminPhone)
+      this.runCommand({ name: 'setAdmin', adminIndex: this.device.countOfDeviceUsers, adminPhone })
     }
-
   }
 }
 </script>

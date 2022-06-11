@@ -80,7 +80,8 @@ export default {
   },
   created () {
     this.$nuxt.$on('userUpdated', (response) => {
-      this.$nuxt.$emit('updateUser', 'user', 'user', true, response.data.user)
+      const user = { simCardSlot: this.simCardSlot, ...response.data.user }
+      this.$nuxt.$emit('updateUser', 'user', 'user', true, user)
       this.$toast.success(response.data.message)
       this.loading = false
     })
@@ -99,7 +100,6 @@ export default {
     submit () {
       if (this.valid) {
         this.loading = true
-        this.$nuxt.$emit('updateUser', 'simCardSlot', this.simCardSlot)
         this.$nuxt.$emit('putReq', 'user/update', 'userUpdated', this.formData)
       }
     }
