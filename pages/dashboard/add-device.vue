@@ -298,8 +298,8 @@ export default {
       return this.$auth.user.phone
     },
     setAdminCommand () {
-      const command = this.$store.getters['commands/getCommand']('setAdmin', 1)
-      return command.replace('$mobile', this.firstAdminNumber)
+      const command = this.$store.getters['commands/getCommand']({ name: 'setAdmin', adminIndex: 1, adminPhone: this.firstAdminNumber })
+      return command
     },
     selectedSlot () {
       if (this.isDualSim) {
@@ -326,8 +326,9 @@ export default {
         this.$toast.success(resp.data.message)
       }
     })
-    this.$nuxt.$on('deviceAdded', () => {
+    this.$nuxt.$on('deviceAdded', (device) => {
       this.loading = false
+      this.saveDeviceToLocal(device)
       this.$toast.success('دستگاه با موفقیت اضافه شد!')
       this.$router.push('/dashboard/')
     })
@@ -492,7 +493,6 @@ export default {
       })
     },
     manualSMSConfirm () {
-      this.saveDeviceToLocal()
       this.step = 5
     },
     sendSMS (number, message) {
@@ -523,8 +523,8 @@ export default {
       SMS.hasPermission(success, error)
     },
 
-    saveDeviceToLocal () {
-      this.$nuxt.$emit('saveDeviceToLocal')
+    saveDeviceToLocal (device) {
+      this.$nuxt.$emit('saveDeviceToLocal', device)
     },
     setSimCardSlot (slot) {
       this.$nuxt.$emit('updateUser', 'simCardSlot', slot)

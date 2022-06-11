@@ -197,7 +197,6 @@ export default {
       this.device = device
     },
     sendAdminSMS (adminPhone) {
-      console.log(adminPhone)
       this.runCommand({ name: 'setAdmin', adminIndex: this.device.countOfDeviceUsers, adminPhone })
     }
   }
