@@ -69,9 +69,11 @@ export default {
   },
   created () {
     this.$nuxt.$on('devicesReceived', (devices) => {
-      this.$nextTick(() => {
-        this.devices = devices
-      })
+      if (devices && devices.length > 0) {
+        this.$nextTick(() => {
+          this.devices = devices
+        })
+      }
     })
     this.$nuxt.$on('error', () => { // network error
       this.offlineDataWarning = true
