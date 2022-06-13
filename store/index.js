@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 import { Sim } from '@ionic-native/sim'
+// eslint-disable-next-line no-unused-vars
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions'
 import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
 export const state = () => ({
-  appVersion: '1.0.3',
+  appVersion: '1.0.5',
   onlineStatus: false,
   devices: {},
   selectedDevice: null,
@@ -63,10 +64,21 @@ export const actions = {
     if (state.platform !== 'web') {
       const res = await Sim.hasReadPermission()
       if (!res) {
-        const permission = await AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.READ_PHONE_STATE)
-        if (!permission.hasPermission) {
+        AndroidPermissions.checkPermission(AndroidPermissions.PERMISSION.READ_PHONE_STATE).then((res) => {
+          AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.READ_PHONE_STATE).then((res) => {
+            if (res.hasPermission) {
+              commit('setDualSIM', true)
+            } else {
+              commit('setDualSIM', false)
+            }
+          })
+        }).catch((err) => {
+          console.log(err)
           $toast.error('برای ادامه نیاز به دسترسی به سیم کارت داریم.'); return false
-        }
+        })
+        // if (!permission.hasPermission) {
+        //   $toast.error('برای ادامه نیاز به دسترسی به سیم کارت داریم.'); return false
+        // }
       }
       const simInfo = await Sim.getSimInfo()
       if (simInfo.phoneCount > 1 && simInfo.activeSubscriptionInfoCount > 1) {
@@ -85,10 +97,11 @@ export const actions = {
       console.log(error)
     }
   },
-  checkNeedsUpdate ({ commit, state }, { $axios, $toast }) {
+  checkNeedsUpdate ({ commit, state, dispatch }, { $axios, $toast }) {
     $axios.get('app/version')
-      .then((res) => {
-        if (res.data.needsUpdate && this.semVerCompare(res.data.version, state.appVersion)) {
+      .then(async (res) => {
+        const verCompare = await dispatch('semVerCompare', [res.data.version, state.appVersion])
+        if (res.data.needsUpdate && verCompare === 1) {
           commit('setNeedsUpdate', res.data.needsUpdate)
         }
         if (res.data.showMessage) {
@@ -100,10 +113,11 @@ export const actions = {
       })
       .catch(error => console.error(error))
   },
-  semVerCompare (a, b) {
+  semVerCompare (context, payload) {
     // -1: a < b
     //  0: a == b
     //  1: a > b
+    const [a, b] = payload
     if (a.startsWith(b + '-')) { return -1 }
     if (b.startsWith(a + '-')) { return 1 }
     return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'case', caseFirst: 'upper' })

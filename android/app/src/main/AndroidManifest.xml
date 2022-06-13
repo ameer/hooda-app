@@ -46,6 +46,6 @@
     <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
     <!-- Grants the READ_PHONE_STATE permission only on devices that run
          Android 10 (API level 29) and lower. -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 </manifest>

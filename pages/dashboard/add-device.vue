@@ -457,10 +457,16 @@ export default {
       if (this.platform !== 'web') {
         const res = await Sim.hasReadPermission()
         if (!res) {
-          const permission = await AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.READ_PHONE_STATE)
-          if (!permission.hasPermission) {
+          AndroidPermissions.checkPermission(AndroidPermissions.PERMISSION.READ_PHONE_STATE).then((res) => {
+            AndroidPermissions.requestPermission(AndroidPermissions.PERMISSION.READ_PHONE_STATE).then((res) => {
+              if (!res.hasPermission) {
+                this.$toast.error('برای ادامه نیاز به دسترسی به سیم کارت داریم.'); return false
+              }
+            })
+          }).catch((err) => {
+            console.log(err)
             this.$toast.error('برای ادامه نیاز به دسترسی به سیم کارت داریم.'); return false
-          }
+          })
         }
         const simInfo = await Sim.getSimInfo()
         this.simInfo = simInfo

@@ -69,10 +69,8 @@ export default {
   },
   created () {
     this.$nuxt.$on('devicesReceived', (devices) => {
-      if (devices && devices.length > 0) {
-        this.$nextTick(() => {
-          this.devices = devices
-        })
+      if (devices !== null && Object.keys(devices).length > 0) {
+        this.devices = devices
       }
     })
     this.$nuxt.$on('error', () => { // network error
