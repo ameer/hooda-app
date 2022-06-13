@@ -72,7 +72,7 @@
           بروزرسانی در دسترس است.
           <v-spacer />
           <v-btn small color="success" href="https://api.hoodaiot.ir/app/latest.apk" target="_blank" rounded>
-            دانلود و نصب
+            بروزرسانی
           </v-btn>
         </div>
       </v-alert>

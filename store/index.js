@@ -88,7 +88,7 @@ export const actions = {
   checkNeedsUpdate ({ commit, state }, { $axios, $toast }) {
     $axios.get('app/version')
       .then((res) => {
-        if (res.data.needsUpdate && res.data.version !== state.appVersion) {
+        if (res.data.needsUpdate && this.semVerCompare(res.data.version, state.appVersion)) {
           commit('setNeedsUpdate', res.data.needsUpdate)
         }
         if (res.data.showMessage) {
@@ -99,5 +99,13 @@ export const actions = {
         }
       })
       .catch(error => console.error(error))
+  },
+  semVerCompare (a, b) {
+    // -1: a < b
+    //  0: a == b
+    //  1: a > b
+    if (a.startsWith(b + '-')) { return -1 }
+    if (b.startsWith(a + '-')) { return 1 }
+    return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'case', caseFirst: 'upper' })
   }
 }
