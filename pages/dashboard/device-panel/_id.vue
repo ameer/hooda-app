@@ -91,27 +91,6 @@ export default {
     },
     simCardSlot () {
       return this.$auth.user.simCardSlot ? this.$auth.user.simCardSlot : 0
-    },
-    deviceName () {
-      if ('type' in this.device) {
-        return this.items[this.device.type].title
-      } else {
-        return ''
-      }
-    },
-    temperature () {
-      if ('ntc' in this.deviceData) {
-        return this.deviceData.ntc
-      } else {
-        return 0
-      }
-    },
-    batteryCharge () {
-      if ('bv' in this.deviceData) {
-        return this.deviceData.bv
-      } else {
-        return 0
-      }
     }
   },
   mounted () {
@@ -154,14 +133,14 @@ export default {
       this.startWatching(command)
     },
     startWatching (command) {
-      this.$store.commit('setIsWatchingForSMS', true)
+      this.$store.dispatch('watchingForSMS', true)
       SmsRetriever.startWatching().then((res) => {
         this.$nuxt.$emit(`messageReceived-${command.name}`, res.Message)
       }).catch((err) => {
         // eslint-disable-next-line no-console
         this.$nuxt.$emit(`messageNotReceived-${command.name}`, err)
       }).finally(() => {
-        this.$store.commit('setIsWatchingForSMS', false)
+        this.$store.dispatch('watchingForSMS', false)
       })
     },
     sendSMS (number, command) {

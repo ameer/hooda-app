@@ -17,11 +17,11 @@
         </v-row>
       </v-container>
       <div class="confirm-btn" :class="{'active': active}" @click.stop="runCommand(command)">
-        <div v-show="!loading" class="text-body-2 white--text">
+        <div v-show="!isWatchingForSMS" class="text-body-2 white--text">
           ارسال پیامک
         </div>
         <v-progress-circular
-          v-show="loading"
+          v-show="isWatchingForSMS"
           indeterminate
           color="white"
         />
@@ -41,7 +41,6 @@ export default {
   data () {
     return {
       active: false,
-      loading: false,
       message: ''
     }
   },
@@ -56,12 +55,10 @@ export default {
   created () {
     this.$nuxt.$on(`messageReceived-${this.command.name}`, (message) => {
       this.active = false
-      this.loading = false
       this.message = message.replace(this.appHash, '')
     })
     this.$nuxt.$on(`messageNotReceived-${this.command.name}`, (err) => {
       this.active = false
-      this.loading = false
       this.message = err
     })
   },
@@ -75,7 +72,6 @@ export default {
     },
     runCommand (command) {
       if (!this.isWatchingForSMS) {
-        this.loading = true
         this.message = ''
         this.$emit('run', command)
       } else {
