@@ -187,7 +187,7 @@ export default {
       return this.$route.name === 'dashboard'
     },
     user () {
-      return this.$auth.user
+      return this.$auth.user ? this.$auth.user : {}
     },
     isKeyboardShown () {
       return this.$store.state.isKeyboardShown
