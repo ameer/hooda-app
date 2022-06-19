@@ -1,6 +1,6 @@
 <template>
   <v-container class="h-100 px-0">
-    <device-card :device="device" :i="-1" />
+    <device-card :device="device" :i="-1" :show-device-response="showDeviceResponse" :device-response="deviceResponse" />
     <v-card v-if="canAddNewAdmin" class="device-card mt-4" rounded="xl">
       <add-admin-to-device
         :admin-index="device.countOfDeviceUsers"
@@ -59,6 +59,8 @@ export default {
     return {
       addAdminDialog: false,
       loading: false,
+      showDeviceResponse: true,
+      deviceResponse: '',
       commands: [],
       device: {},
       deviceData: {},
@@ -129,16 +131,17 @@ export default {
       this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}/data`, 'deviceDataRecieved')
     },
     runCommand (command) {
+      this.deviceResponse = ''
       this.checkAndSend(this.device.sim_number, command)
-      this.startWatching(command)
+      this.startWatching()
     },
-    startWatching (command) {
+    startWatching () {
       this.$store.dispatch('watchingForSMS', true)
       SmsRetriever.startWatching().then((res) => {
-        this.$nuxt.$emit(`messageReceived-${command.name}`, res.Message)
+        this.deviceResponse = res.Message.replace(this.appHash, '')
       }).catch((err) => {
         // eslint-disable-next-line no-console
-        this.$nuxt.$emit(`messageNotReceived-${command.name}`, err)
+        this.deviceResponse = err
       }).finally(() => {
         this.$store.dispatch('watchingForSMS', false)
       })

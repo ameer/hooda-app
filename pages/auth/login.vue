@@ -17,7 +17,7 @@
             v-model="login.phone"
             class="mb-4"
             dir="auto"
-            filled
+            outlined
             flat
             single-line
             type="tel"
@@ -37,7 +37,7 @@
             autocomplete="off"
             class="mb-4"
             dir="auto"
-            filled
+            outlined
             type="password"
             flat
             single-line
@@ -48,21 +48,21 @@
             hide-details="auto"
             tabindex="2"
           />
-          <div class="text-center">
+          <!-- <div class="text-center">
             <nuxt-link class="text-decoration-none text-body-2 mb-4" to="/auth/forgot-password">
               فراموشی گذرواژه
             </nuxt-link>
-          </div>
-          <v-switch
+          </div> -->
+          <!-- <v-switch
             v-model="login.remember"
             class="mb-4"
             inset
             label="ذخیره اطلاعات ورود"
             hide-details="auto"
-          />
+          /> -->
           <v-btn
             block
-            large
+            height="56px"
             rounded
             color="primary"
             :disabled="!valid"
@@ -70,7 +70,7 @@
             type="submit"
             tabindex="3"
           >
-            ورود
+            <span class="font-weight-bold text-body-1">ورود</span>
           </v-btn>
         </v-form>
       </v-col>

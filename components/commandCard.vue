@@ -4,24 +4,21 @@
       <v-container class="h-100" fluid>
         <v-row align="center" class="h-100">
           <v-col cols="3" class="pr-0">
-            <v-img :src="`/svg/commands-icons/${command.name}.svg`" contain max-height="64px" />
+            <v-img :src="`/svg/commands-icons/${command.name}.svg`" contain max-height="64px" eager />
           </v-col>
           <v-col cols="6" class="pr-0">
             <div class="text-body-1 font-weight-bold">
               {{ $store.getters['i18n/getTranslate'](command.name) }}
             </div>
-            <div v-if="message" class="mt-3">
-              <span class="text-body-2">پاسخ دستگاه: </span><span class="text-body-2 font-weight-bold">{{ message }}</span>
-            </div>
           </v-col>
         </v-row>
       </v-container>
       <div class="confirm-btn" :class="{'active': active}" @click.stop="runCommand(command)">
-        <div v-show="!isWatchingForSMS" class="text-body-2 white--text">
+        <div v-show="!loading" class="text-body-2 white--text">
           ارسال پیامک
         </div>
         <v-progress-circular
-          v-show="isWatchingForSMS"
+          v-show="loading"
           indeterminate
           color="white"
         />
@@ -41,7 +38,8 @@ export default {
   data () {
     return {
       active: false,
-      message: ''
+      message: '',
+      loading: false
     }
   },
   computed: {
@@ -50,6 +48,14 @@ export default {
     },
     isWatchingForSMS () {
       return this.$store.state.isWatchingForSMS
+    }
+  },
+  watch: {
+    isWatchingForSMS (val) {
+      if (!val) {
+        this.active = false
+        this.loading = false
+      }
     }
   },
   created () {
@@ -72,11 +78,13 @@ export default {
     },
     runCommand (command) {
       if (!this.isWatchingForSMS) {
+        this.loading = true
         this.message = ''
         this.$emit('run', command)
       } else {
         this.$toast.error('برنامه در انتظار دریافت پیامک است. لطفاْ چند لحظه بعد تلاش کنید.')
         this.active = false
+        this.loading = false
       }
     }
   }

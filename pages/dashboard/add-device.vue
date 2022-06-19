@@ -21,12 +21,12 @@
           </v-stepper-header>
           <v-stepper-items class="accent">
             <v-stepper-content step="1" class="px-0">
-              <v-form ref="checkDeviceForm" v-model="valid.checkDeviceForm" @submit.prevent="checkDevice">
+              <v-form ref="checkDeviceForm" v-model="valid.checkDeviceForm" class="pt-4" @submit.prevent="checkDevice">
                 <v-text-field
                   v-model="formData.serialNumber"
                   dir="auto"
                   class="mb-2"
-                  filled
+                  outlined
                   flat
                   maxlength="16"
                   :rules="[
@@ -41,31 +41,33 @@
                   hide-details="auto"
                   tabindex="1"
                 />
-                <v-btn v-if="platform !== 'web'" rounded color="info darken-2" class="mx-auto mb-6 d-block" @click="askUser">
+                <!-- <v-btn v-if="platform !== 'web'" rounded color="info darken-2" class="mx-auto mb-6 d-block" @click="askUser">
                   اسکن بارکد با دوربین
-                </v-btn>
-                <v-btn
-                  dark
-                  block
-                  large
-                  rounded
-                  color="green darken-3"
-                  :disabled="!valid.checkDeviceForm"
-                  :loading="loading"
-                  type="submit"
-                  tabindex="2"
-                >
-                  <span class="font-weight-bold text-body-1">مرحله بعد</span>
-                </v-btn>
+                </v-btn> -->
+                <transition name="slide-y-reverse-transition">
+                  <v-btn
+                    v-if="valid.checkDeviceForm"
+                    dark
+                    block
+                    large
+                    rounded
+                    color="green darken-3"
+                    :loading="loading"
+                    type="submit"
+                    tabindex="2"
+                  >
+                    <span class="font-weight-bold text-body-1">مرحله بعد</span>
+                  </v-btn>
+                </transition>
               </v-form>
             </v-stepper-content>
             <v-stepper-content step="2" class="px-0">
-              <v-form ref="deviceDetailForm" v-model="valid.deviceDetailForm" @submit.prevent="submitDeviceDetail">
+              <v-form ref="deviceDetailForm" v-model="valid.deviceDetailForm" class="pt-4" @submit.prevent="submitDeviceDetail">
                 <v-text-field
                   v-model="formData.simCardNumber"
                   dir="auto"
                   class="mb-4"
-                  filled
+                  outlined
                   flat
                   type="tel"
                   validate-on-blur
@@ -85,7 +87,7 @@
                   v-model="formData.nickname"
                   dir="auto"
                   class="mb-4"
-                  filled
+                  outlined
                   flat
                   type="text"
                   label="نام مستعار دستگاه"
@@ -100,7 +102,7 @@
                   v-model="formData.location"
                   dir="auto"
                   class="mb-4"
-                  filled
+                  outlined
                   flat
                   type="text"
                   label="محل نصب دستگاه"
@@ -137,7 +139,7 @@
                 <div v-if="isDualSim">
                   <div v-if="typeof user.simCardSlot === 'undefined'" class="text-body-1">
                     با توجه به اینکه از این پس کلیه ارتباطات با دستگاه از طریق این شماره خواهد بود، لطفا انتخاب کنید این شماره مربوط به کدام سیم کارت است:
-                    <v-form ref="dualSimForm" v-model="valid.dualSimForm" @submit.prevent="submitSMSConfirmStep">
+                    <v-form ref="dualSimForm" v-model="valid.dualSimForm" class="pt-4" @submit.prevent="submitSMSConfirmStep">
                       <v-radio-group v-model="selectedSim" class="px-4" :rules="[rules.required]">
                         <v-radio
                           v-for="(sim,i) in simInfo.activeSubscriptionInfoCount"
@@ -464,6 +466,7 @@ export default {
               }
             })
           }).catch((err) => {
+            // eslint-disable-next-line no-console
             console.log(err)
             this.$toast.error('برای ادامه نیاز به دسترسی به سیم کارت داریم.'); return false
           })

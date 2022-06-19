@@ -15,7 +15,8 @@ export const state = () => ({
   appHash: '',
   needsUpdate: false,
   isWatchingForSMS: false,
-  isScanningBarcode: false
+  isScanningBarcode: false,
+  timeoutId: null
 })
 
 export const mutations = {
@@ -57,6 +58,9 @@ export const mutations = {
   },
   setIsScanningBarcode (state, status) {
     state.isScanningBarcode = status
+  },
+  setTimeoutId (state, id) {
+    state.timeoutId = id
   }
 }
 export const actions = {
@@ -122,13 +126,19 @@ export const actions = {
     if (b.startsWith(a + '-')) { return 1 }
     return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'case', caseFirst: 'upper' })
   },
-  watchingForSMS ({ commit }, isWatching) {
-    console.log('watchingForSMS', isWatching)
+  watchingForSMS ({ commit, state }, isWatching) {
     commit('setIsWatchingForSMS', isWatching)
     if (isWatching) {
-      window.setTimeout(() => {
+      if (state.timeoutId) {
+        clearTimeout(state.timeoutId)
+      }
+      const timeoutId = window.setTimeout(() => {
         commit('setIsWatchingForSMS', false)
       }, 60000)
+      commit('setTimeoutId', timeoutId)
+    } else {
+      clearTimeout(state.timeoutId)
+      commit('setTimeoutId', null)
     }
   }
 }

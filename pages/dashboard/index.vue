@@ -19,13 +19,15 @@
     <transition-group
       name="slide-in"
       tag="div"
-      class="row mt-4 align-start justify-start"
+      class="row mt-4 align-start justify-center"
       :style="{ '--total': devices.length }"
     >
       <v-col
         v-for="(device, id ,i) in devices"
         :key="`device-${id}`"
         cols="12"
+        sm="9"
+        md="6"
         :style="{'--i': i}"
       >
         <device-card :device="device" :i="i" />
