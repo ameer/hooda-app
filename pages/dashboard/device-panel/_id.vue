@@ -10,6 +10,20 @@
         @updateDevice="updateDevice"
         @sendAdminSMS="sendAdminSMS"
       />
+      <remove-admin-from-device
+        :dialog="removeAdminDialog"
+        :device-id="$route.params.id"
+        @closeDialog="removeAdminDialog = false"
+        @updateDevice="updateDevice"
+        @sendRemoveAdminSMS="sendRemoveAdminSMS"
+      />
+      <change-device-password
+        :dialog="changeDevicePasswordDialog"
+        :device-id="$route.params.id"
+        @closeDialog="changeDevicePasswordDialog = false"
+        @updateDevice="updateDevice"
+        @sendChangePasswordSMS="sendChangePasswordSMS"
+      />
       <v-card-text>
         <p class="text-body-1">
           این دستگاه در حال حاضر <span class="faNum font-weight-bold">{{ device.countOfDeviceUsers }}</span> مدیر دارد.
@@ -37,7 +51,8 @@
         cols="12"
         :style="{'--i': i}"
       >
-        <CommandCard :command="command" @run="runCommand" />
+        <CommandCard v-if="!command.isAction" :command="command" @run="runCommand" />
+        <CommandCard v-else :command="command" :special-command="true" @runSpecialCommand="handleSpecialCommand" />
       </v-col>
     </transition-group>
   </v-container>
@@ -51,13 +66,17 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
 import deviceCard from '~/components/deviceCard.vue'
 import CommandCard from '~/components/commandCard.vue'
 import AddAdminToDevice from '~/components/dialogs/addAdminToDevice.vue'
+import RemoveAdminFromDevice from '~/components/dialogs/removeAdminFromDevice.vue'
+import ChangeDevicePassword from '~/components/dialogs/changeDevicePassword.vue'
 export default {
-  components: { deviceCard, CommandCard, AddAdminToDevice },
+  components: { deviceCard, CommandCard, AddAdminToDevice, RemoveAdminFromDevice, ChangeDevicePassword },
   // components: { gauge, BatteryIndicator },
   layout: 'dashboard',
   data () {
     return {
       addAdminDialog: false,
+      removeAdminDialog: false,
+      changeDevicePasswordDialog: false,
       loading: false,
       showDeviceResponse: true,
       deviceResponse: '',
@@ -132,6 +151,8 @@ export default {
     },
     runCommand (command) {
       this.deviceResponse = ''
+      const self = this
+      console.log(self.$store.getters['commands/getCommand'](command))
       this.checkAndSend(this.device.sim_number, command)
       this.startWatching()
     },
@@ -139,6 +160,7 @@ export default {
       this.$store.dispatch('watchingForSMS', true)
       SmsRetriever.startWatching().then((res) => {
         this.deviceResponse = res.Message.replace(this.appHash, '')
+        this.scrollIntoView('device-response')
       }).catch((err) => {
         // eslint-disable-next-line no-console
         this.deviceResponse = err
@@ -155,7 +177,8 @@ export default {
         })
         .catch((err) => {
           self.$toast.error('مشکلی در ارسال پیامک به وجود آمده است.' + err)
-          this.$nuxt.$emit(`messageNotReceived-${command.name}`, err)
+        }).finally(() => {
+          this.$store.dispatch('watchingForSMS', false)
         })
     },
     checkAndSend (number, command) {
@@ -168,7 +191,8 @@ export default {
             self.sendSMS(number, command)
           }).catch((err) => {
             self.$toast.error(JSON.stringify(err))
-            this.$nuxt.$emit(`messageNotReceived-${command.name}`, err)
+          }).finally(() => {
+            this.$store.dispatch('watchingForSMS', false)
           })
         }
       }
@@ -180,6 +204,26 @@ export default {
     },
     sendAdminSMS (adminPhone) {
       this.runCommand({ name: 'setAdmin', adminIndex: this.device.countOfDeviceUsers, adminPhone })
+    },
+    sendRemoveAdminSMS (adminIndex, adminPhone) {
+      this.runCommand({ name: 'removeAdmin', adminIndex, adminPhone })
+    },
+    sendChangePasswordSMS (password) {
+      this.runCommand({ name: 'changeDevicePassword', password })
+    },
+    handleSpecialCommand (command) {
+      switch (command.action) {
+        case 'removeAdmin':
+          this.removeAdminDialog = true
+          break
+        case 'changeDevicePassword':
+          this.changeDevicePasswordDialog = true
+          break
+      }
+    },
+    scrollIntoView (id) {
+      const el = document.getElementById(id)
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }
 }

@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
     },
   },
   // "server": {
-  //   "url": "http://192.168.117.174:3000",
+  //   "url": "http://192.168.117.181:3000",
   //   "cleartext": true
   // },
   appId: 'io.hooda.app',

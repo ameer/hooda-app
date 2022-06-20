@@ -34,7 +34,7 @@
             </div>
           </div>
         </v-col>
-        <v-col v-if="showDeviceResponse" cols="12">
+        <v-col v-if="showDeviceResponse" id="device-response" cols="12">
           <v-divider class="mt-4" />
           <div class="mt-3">
             <span class="text-body-2">پاسخ دستگاه: </span><span class="text-body-2 font-weight-bold">{{ deviceResponse }}</span>

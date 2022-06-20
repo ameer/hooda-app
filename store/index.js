@@ -4,7 +4,7 @@ import { Sim } from '@ionic-native/sim'
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions'
 import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
 export const state = () => ({
-  appVersion: '1.0.5',
+  appVersion: '1.0.8',
   onlineStatus: false,
   devices: {},
   selectedDevice: null,

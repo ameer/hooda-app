@@ -26,26 +26,51 @@
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>افزودن مدیر {{ adminIndexInFa[adminIndex] }} به دستگاه</v-toolbar-title>
+        <v-toolbar-title>تغییر رمز عبور دستگاه</v-toolbar-title>
         <v-spacer />
       </v-toolbar>
-      <v-form ref="addAdminForm" v-model="valid" @submit.prevent="submitAdmin">
+      <v-form ref="changePasswordForm" v-model="valid" @submit.prevent="submitNewPassword">
         <v-card-text class="mt-4">
           <p class="text-body-1 line-height-x2 text-justify">
-            در این قسمت شما می‌توانید یک کاربر را به لیست مدیران دستگاه اضافه کنید. این کاربر پس از نصب اپلیکیشن و تکمیل اطلاعات فردی می‌تواند این دستگاه را در فهرست دستگاه‌های خود مشاهده کند.
+            در این قسمت شما می‌توانید رمز عبور جدید را برای دستگاه خود وارد کنید.
           </p>
-
           <v-text-field
-            v-model="formData.phone"
+            v-model="formData.currentPassword"
             dir="auto"
             outlined
             flat
-            type="tel"
-            maxlength="11"
-            minlength="11"
-            label="شماره موبایل"
-            prepend-inner-icon="mdi-phone"
-            :rules="[rules.required, rules.validMobile]"
+            type="password"
+            maxlength="4"
+            minlength="4"
+            label="رمز فعلی"
+            prepend-inner-icon="mdi-lock"
+            :rules="[rules.required, rules.valid4digitsPassword]"
+            rounded
+          />
+          <v-text-field
+            v-model="formData.newPassword"
+            dir="auto"
+            outlined
+            flat
+            type="password"
+            maxlength="4"
+            minlength="4"
+            label="رمز عبور جدید"
+            prepend-inner-icon="mdi-lock"
+            :rules="[rules.required, rules.valid4digitsPassword]"
+            rounded
+          />
+          <v-text-field
+            v-model="formData.newPassword_confirmation"
+            dir="auto"
+            outlined
+            flat
+            type="password"
+            maxlength="4"
+            minlength="4"
+            label="تکرار رمز عبور جدید"
+            prepend-inner-icon="mdi-lock"
+            :rules="[rules.required, rules.valid4digitsPassword]"
             rounded
           />
         </v-card-text>
@@ -60,7 +85,7 @@
             :loading="loading"
             :disabled="!valid"
           >
-            <span class="text-h6 font-weight-bold">ثبت مدیر {{ adminIndexInFa[adminIndex] }}</span>
+            <span class="text-h6 font-weight-bold">تغییر رمز عبور دستگاه</span>
           </v-btn>
         </v-card-actions>
       </v-form>
@@ -89,52 +114,48 @@ export default {
     return {
       confirmDialog: false,
       dialogTitle: 'ارسال پیامک',
-      dialogMessage: 'پس از تایید، پیامک ثبت این شماره به دستگاه ارسال خواهد شد. آیا مطمئن هستید؟',
+      dialogMessage: 'پس از تایید، پیامک ثبت این رمز به دستگاه ارسال خواهد شد. آیا مطمئن هستید؟',
       loading: false,
       valid: false,
       formData: {
         phone: ''
       },
       rules: {
-        required: v => !!v || 'برای ادامه به شماره موبایل نیاز داریم.',
-        validMobile: v => /^09\d{9}$/.test(v) || 'شماره موبایل صحیح نمی‌باشد.'
-      },
-      adminIndexInFa: [
-        'اول',
-        'دوم',
-        'سوم'
-      ]
+        required: v => !!v || 'برای ادامه به رمز عبور نیاز داریم.',
+        valid4digitsPassword: v => /^\d{4}$/.test(v) || 'رمز عبور باید ۴ رقم باشد.'
+      }
     }
   },
   created () {
-    this.$nuxt.$on('adminAdded', (resp) => {
+    this.$nuxt.$on('devicePasswordChanged', (resp) => {
       this.$toast.success(resp.data.message)
       this.$nuxt.$emit('saveDeviceToLocal', resp.data.device)
       this.$emit('updateDevice', resp.data.device)
-      this.$emit('sendAdminSMS', this.formData.phone)
+      this.$store.dispatch('commands/setPassword', resp.data.device.psw)
+      this.$emit('sendChangePasswordSMS', this.formData.newPassword)
       this.closeDialog()
     })
   },
   beforeDestroy () {
-    this.$nuxt.$off('adminAdded')
+    this.$nuxt.$off('devicePasswordChanged')
   },
   methods: {
-    submitAdmin () {
-      if (!this.$refs.addAdminForm.validate()) {
+    submitNewPassword () {
+      if (!this.$refs.changePasswordForm.validate()) {
         return false
       }
       this.loading = true
       this.confirmDialog = true
     },
     actionConfirmed () {
-      this.$nuxt.$emit('postReq', `user/add-admin/${this.$route.params.id}`, 'adminAdded', this.formData)
+      this.$nuxt.$emit('postReq', `user/change-device-password/${this.$route.params.id}`, 'devicePasswordChanged', this.formData)
     },
     closeConfirmDialog () {
       this.loading = false
       this.confirmDialog = false
     },
     closeDialog () {
-      this.$refs.addAdminForm.reset()
+      this.$refs.changePasswordForm.reset()
       this.closeConfirmDialog()
       this.$emit('closeDialog', false)
     }

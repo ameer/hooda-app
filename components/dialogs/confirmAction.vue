@@ -56,7 +56,7 @@ export default {
       this.$emit('actionConfirmed', true)
     },
     closeDialog () {
-      this.$emit('closeDialog', false)
+      this.$emit('closeDialog', true)
     }
   }
 }
