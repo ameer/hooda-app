@@ -6,7 +6,7 @@
         ویرایش دستگاه
       </div>
       <v-row align="center" justify="center">
-        <v-col cols="12" md="6" lg="4" xl="3">
+        <v-col cols="12" sm="9" md="6">
           <v-card rounded="xl" class="device-card">
             <v-card-text>
               <v-form ref="deviceDetailForm" v-model="valid.deviceDetailForm" @submit.prevent="updateDevice">
@@ -116,7 +116,6 @@ export default {
     return {
       dialog: false,
       dialogTitle: 'حذف دستگاه',
-      dialogMessage: 'آیا مطمئن هستید که می‌خواهید دستگاه موردنظر را حذف کنید؟ این کار غیرقابل بازگشت است.',
       device: null,
       loading: false,
       valid: {
@@ -128,6 +127,15 @@ export default {
         serialNumber: '',
         simCardNumber: '',
         location: ''
+      }
+    }
+  },
+  computed: {
+    dialogMessage () {
+      if (this.device && this.device.pivot.role === 1) {
+        return 'آیا مطمئن هستید که می‌خواهید دستگاه را حذف کنید؟ با توجه به اینکه شما مدیر اصلی هستید با انجام این کار دستگاه از حساب کاربری سایر مدیران نیز حذف خواهد شد.'
+      } else {
+        return 'آیا مطمئن هستید که می‌خواهید دستگاه موردنظر را حذف کنید؟ این کار غیرقابل بازگشت است.'
       }
     }
   },

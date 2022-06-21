@@ -4,7 +4,7 @@ import { Sim } from '@ionic-native/sim'
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions'
 import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
 export const state = () => ({
-  appVersion: '1.0.8',
+  appVersion: '1.0.9',
   onlineStatus: false,
   devices: {},
   selectedDevice: null,
@@ -16,7 +16,8 @@ export const state = () => ({
   needsUpdate: false,
   isWatchingForSMS: false,
   isScanningBarcode: false,
-  timeoutId: null
+  timeoutId: null,
+  updateURL: 'https://api.hoodaiot.ir/app/latest'
 })
 
 export const mutations = {
@@ -61,6 +62,9 @@ export const mutations = {
   },
   setTimeoutId (state, id) {
     state.timeoutId = id
+  },
+  setUpdateURL (state, url) {
+    state.updateURL = url
   }
 }
 export const actions = {
@@ -105,8 +109,10 @@ export const actions = {
     $axios.get('app/version')
       .then(async (res) => {
         const verCompare = await dispatch('semVerCompare', [res.data.version, state.appVersion])
+        console.log(verCompare, res.data.version, state.appVersion)
         if (res.data.needsUpdate && verCompare === 1) {
           commit('setNeedsUpdate', res.data.needsUpdate)
+          commit('setUpdateURL', res.data.updateURL)
         }
         if (res.data.showMessage) {
           $toast.info(res.data.message, {

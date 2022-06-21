@@ -169,6 +169,7 @@
                   flat
                   single-line
                   label="گذرواژه"
+                  hint="حداقل ۸ کاراکتر"
                   prepend-inner-icon="mdi-lock"
                   rounded
                   hide-details="auto"

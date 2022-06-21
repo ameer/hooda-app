@@ -334,6 +334,9 @@ export default {
       this.$toast.success('دستگاه با موفقیت اضافه شد!')
       this.$router.push('/dashboard/')
     })
+    this.$nuxt.$on('error', (resp) => {
+      this.loading = false
+    })
   },
   beforeDestroy () {
     this.$nuxt.$off('error')

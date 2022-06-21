@@ -71,7 +71,7 @@
         <div class="d-flex">
           بروزرسانی در دسترس است.
           <v-spacer />
-          <v-btn small color="success" href="https://api.hoodaiot.ir/app/latest.apk" target="_blank" rounded>
+          <v-btn small color="success" :href="updateURL" target="_blank" rounded>
             بروزرسانی
           </v-btn>
         </div>
@@ -197,6 +197,9 @@ export default {
     },
     needsUpdate () {
       return this.$store.state.needsUpdate
+    },
+    updateURL () {
+      return this.$store.state.updateURL
     }
   },
   async mounted () {
