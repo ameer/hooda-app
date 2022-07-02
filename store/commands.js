@@ -28,6 +28,9 @@ export const getters = {
     if (command.name === 'removeAdmin') {
       commandString = commandString.replace('$adminIndex', command.adminIndex)
     }
+    if (command.name === 'changeDevicePassword') {
+      commandString = commandString.replace('$newPassword', command.newPassword)
+    }
     return commandString
   },
   getUserCommands: state => () => {

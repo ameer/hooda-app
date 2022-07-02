@@ -208,8 +208,8 @@ export default {
     sendRemoveAdminSMS (adminIndex, adminPhone) {
       this.runCommand({ name: 'removeAdmin', adminIndex, adminPhone })
     },
-    sendChangePasswordSMS (password) {
-      this.runCommand({ name: 'changeDevicePassword', password })
+    sendChangePasswordSMS (newPassword) {
+      this.runCommand({ name: 'changeDevicePassword', newPassword })
     },
     handleSpecialCommand (command) {
       switch (command.action) {
