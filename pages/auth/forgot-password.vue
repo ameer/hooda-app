@@ -4,7 +4,7 @@
       <v-col cols="12" sm="6" class="pb-0">
         <div class="text-center">
           <h4 class="text--primary mb-2">
-            به هودا خوش آمدید
+            فراموشی رمز عبور
           </h4>
           <p class="text--secondary text-body-2 mb-2">
             {{ subtitle }}
@@ -125,42 +125,6 @@
             <v-stepper-content step="3" class="px-0 pt-0">
               <v-form ref="userInfoForm" v-model="valid.userInfo" @submit.prevent="submitUserInfo">
                 <v-text-field
-                  v-model="fullname"
-                  dir="auto"
-                  class="mb-4"
-                  filled
-                  flat
-                  single-line
-                  label="نام و نام خانوادگی"
-                  prepend-inner-icon="mdi-account-outline"
-                  rounded
-                  hide-details="auto"
-                />
-                <v-text-field
-                  v-model="city"
-                  dir="auto"
-                  class="mb-4"
-                  filled
-                  flat
-                  single-line
-                  label="شهر"
-                  prepend-inner-icon="mdi-map-marker"
-                  rounded
-                  hide-details="auto"
-                />
-                <v-text-field
-                  v-model="email"
-                  dir="auto"
-                  class="mb-4"
-                  filled
-                  flat
-                  single-line
-                  label="ایمیل اختیاری"
-                  prepend-inner-icon="mdi-email-outline"
-                  rounded
-                  hide-details="auto"
-                />
-                <v-text-field
                   v-model="password"
                   dir="auto"
                   class="mb-4"
@@ -224,15 +188,13 @@ export default {
         otp: false,
         userInfo: false
       },
-      fullname: '',
-      city: '',
-      email: '',
       password: '',
       passwordConfirm: '',
       messages: [],
       phoneNumber: '',
       maskedPhoneNumber: '',
       loginHash: '',
+      signUpHash: '',
       otp: '',
       waitTime: 180,
       startTime: 0,
@@ -249,11 +211,11 @@ export default {
     subtitle () {
       switch (this.step) {
         case 1:
-          return 'برای ثبت‌نام لطفاً شماره موبایل خود را وارد کنید:'
+          return 'برای بازیابی رمز عبور لطفاً شماره موبایل خود را وارد کنید:'
         case 2:
           return 'تایید شماره همراه'
         case 3:
-          return 'لطفاً اطلاعات کاربری خود را ثبت کنید'
+          return 'لطفاً رمز جدید خود را وارد کنید'
         default:
           return ''
       }
@@ -287,10 +249,11 @@ export default {
       this.step = 2
     })
     this.$nuxt.$on('otpVerified', (resp) => {
+      this.signUpHash = resp.data.hash
       this.loading = false
       this.step = 3
     })
-    this.$nuxt.$on('userRegistered', async (resp) => {
+    this.$nuxt.$on('passwordHasBeenReset', async (resp) => {
       this.loading = false
       await this.$auth.setUserToken(resp.data.access_token)
       this.$nuxt.$emit('userLoggedIn', resp.data.user)
@@ -300,7 +263,7 @@ export default {
     this.$nuxt.$off('error')
     this.$nuxt.$off('otpSent')
     this.$nuxt.$off('otpVerified')
-    this.$nuxt.$off('userRegistered')
+    this.$nuxt.$off('passwordHasBeenReset')
   },
   methods: {
     editPhoneNumber () {
@@ -324,21 +287,27 @@ export default {
         return false
       }
       this.loading = true
-      this.$nuxt.$emit('postReq', 'auth/verify-phone/', 'otpSent', { phone: this.phoneNumber })
+      this.$nuxt.$emit('postReq', 'auth/forgot-password', 'otpSent', { phone: this.phoneNumber })
     },
     submitOTP () {
       if (!this.$refs.otpForm.validate()) {
         return false
       }
       this.loading = true
-      this.$nuxt.$emit('postReq', 'auth/verify-otp', 'otpVerified', { phone: this.phoneNumber, loginHash: this.loginHash, otp: this.otp })
+      this.$nuxt.$emit('postReq', 'auth/forgot-password/verify-otp', 'otpVerified', { phone: this.phoneNumber, loginHash: this.loginHash, otp: this.otp })
     },
     submitUserInfo () {
       if (!this.$refs.userInfoForm.validate()) {
         return false
       }
       this.loading = true
-      this.$nuxt.$emit('postReq', 'auth/register', 'userRegistered', { fullname: this.fullname, email: this.email, password: this.password, password_confirmation: this.passwordConfirm, city: this.city, phone: this.phoneNumber })
+      this.$nuxt.$emit('postReq', 'auth/reset-user-password', 'passwordHasBeenReset',
+        {
+          password: this.password,
+          password_confirmation: this.passwordConfirm,
+          hash: this.signUpHash,
+          phone: this.phoneNumber
+        })
     },
     scrollIntoView (e) {
       e.target.scrollIntoView({ behavior: 'smooth' })

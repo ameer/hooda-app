@@ -96,8 +96,8 @@ export default {
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseUrl: 'https://api.hoodaiot.ir/api/v1/',
-    // baseUrl: 'http://192.168.117.181:8000/api/v1/',
+    // baseUrl: 'https://api.hoodaiot.ir/api/v1/',
+    baseUrl: 'http://192.168.117.180:8000/api/v1/',
     // baseUrl: 'http://192.168.42.182:8000/api/v1/',
     credentials: true
   },

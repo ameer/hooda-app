@@ -51,7 +51,7 @@
     <v-main class="accent h-full">
       <v-container fluid class="h-1/3">
         <img
-          v-if="currentPage === 'auth-login'"
+          v-if="currentPage !== 'auth-signup'"
           src="/logo.svg"
           width="100%"
           height="100%"
@@ -89,6 +89,11 @@ export default {
           icon: 'mdi-login-variant',
           title: 'ورود',
           to: '/auth/login'
+        },
+        {
+          icon: 'mdi-lock-reset',
+          title: 'فراموشی رمز عبور',
+          to: '/auth/forgot-password'
         }
       ],
       miniVariant: false,

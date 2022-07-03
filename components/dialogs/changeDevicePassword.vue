@@ -29,7 +29,7 @@
         <v-toolbar-title>تغییر رمز عبور دستگاه</v-toolbar-title>
         <v-spacer />
       </v-toolbar>
-      <v-form ref="changePasswordForm" v-model="valid" @submit.prevent="submitNewPassword">
+      <v-form ref="changePasswordForm" v-model="valid" class="h-full" @submit.prevent="submitNewPassword">
         <v-card-text class="mt-4">
           <p class="text-body-1 line-height-x2 text-justify">
             در این قسمت شما می‌توانید رمز عبور جدید را برای دستگاه خود وارد کنید.
@@ -71,8 +71,10 @@
             label="تکرار رمز عبور جدید"
             prepend-inner-icon="mdi-lock"
             :rules="[rules.required, rules.valid4digitsPassword]"
+            hide-details="auto"
             rounded
           />
+          <v-switch v-model="shouldSendSMS" inset label="ارسال پیامک تغییر رمز به دستگاه" hint="چنانچه رمز دستگاه را قبلا با پیامک تغییر داده‌اید این گزینه را غیرفعال کنید." persistent-hint />
         </v-card-text>
         <v-card-actions class="justify-center">
           <v-btn
@@ -114,7 +116,7 @@ export default {
     return {
       confirmDialog: false,
       dialogTitle: 'ارسال پیامک',
-      dialogMessage: 'پس از تایید، پیامک ثبت این رمز به دستگاه ارسال خواهد شد. آیا مطمئن هستید؟',
+
       loading: false,
       valid: false,
       formData: {
@@ -123,7 +125,13 @@ export default {
       rules: {
         required: v => !!v || 'برای ادامه به رمز عبور نیاز داریم.',
         valid4digitsPassword: v => /^\d{4}$/.test(v) || 'رمز عبور باید ۴ رقم باشد.'
-      }
+      },
+      shouldSendSMS: 1
+    }
+  },
+  computed: {
+    dialogMessage () {
+      return this.shouldSendSMS ? 'پس از تایید، پیامک ثبت این رمز به دستگاه ارسال خواهد شد. آیا مطمئن هستید؟' : 'آیا از تغییر رمز مطمئن هستید؟ پیامک به دستگاه ارسال نخواهد شد.'
     }
   },
   created () {
@@ -132,7 +140,9 @@ export default {
       this.$nuxt.$emit('saveDeviceToLocal', resp.data.device)
       this.$emit('updateDevice', resp.data.device)
       this.$store.dispatch('commands/setPassword', resp.data.device.psw)
-      this.$emit('sendChangePasswordSMS', this.formData.newPassword)
+      if (this.shouldSendSMS) {
+        this.$emit('sendChangePasswordSMS', this.formData.newPassword)
+      }
       this.closeDialog()
     })
   },
