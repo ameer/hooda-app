@@ -17,7 +17,7 @@ export const state = () => ({
   isWatchingForSMS: false,
   isScanningBarcode: false,
   timeoutId: null,
-  updateURL: 'https://api.hoodaiot.ir/app/latest'
+  updateURL: 'https://api.smartguard123.ir/app/latest'
 })
 
 export const mutations = {

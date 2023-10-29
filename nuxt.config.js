@@ -10,7 +10,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - هودا',
+    titleTemplate: '%s - نگهبان هوشمند',
     title: 'اپلیکیشن',
     htmlAttrs: {
       lang: 'en'
@@ -96,7 +96,7 @@ export default {
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    // baseUrl: 'https://api.hoodaiot.ir/api/v1/',
+    // baseUrl: 'https://api.smartguard123.ir/api/v1/',
     baseUrl: 'http://192.168.117.180:8000/api/v1/',
     // baseUrl: 'http://192.168.42.182:8000/api/v1/',
     credentials: true

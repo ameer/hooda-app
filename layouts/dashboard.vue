@@ -133,12 +133,11 @@ import OnlineIndicator from '~/components/onlineIndicator.vue'
 import userAvatar from '~/components/userAvatar.vue'
 export default {
   components: { userAvatar, OnlineIndicator },
-  auth: false,
-  middleware: 'authenticated',
+
   data () {
     return {
       drawer: false,
-      title: 'هــودا',
+      title: 'نگهبان هوشمند',
       items: [
         {
           icon: 'mdi-account',
@@ -203,7 +202,7 @@ export default {
     }
   },
   async mounted () {
-    this.$store.dispatch('checkNeedsUpdate', this)
+    // this.$store.dispatch('checkNeedsUpdate', this)
     this.$store.commit('setPlatform', Capacitor.getPlatform())
     const devices = await this.getDataFromLocal('devices')
     this.$store.commit('setDevices', devices)
@@ -239,8 +238,8 @@ export default {
       try {
         await Share.share({
           title: 'معرفی به دوستان',
-          text: 'اپلیکیشن کاربردی هودا برای مدیریت اولین دزدگیر دتکتور هوشمند و گجتی در ایران. برای دریافت اپلیکیشن روی لینک زیر بزنید',
-          url: 'https://hoodaiot.ir',
+          text: 'اپلیکیشن کاربردی نگهبان هوشمند برای مدیریت اولین دزدگیر دتکتور هوشمند و گجتی در ایران. برای دریافت اپلیکیشن روی لینک زیر بزنید',
+          url: 'https://smartguard123.ir',
           dialogTitle: 'اشتراک‌گذاری اپلیکیشن'
         })
       } catch (error) {
@@ -371,7 +370,7 @@ export default {
       this.saveDataToLocal('devices', devices)
     },
     async removeDeviceFromLocal (deviceUUID) {
-      await this.$store.commit('removeDeviceFromList', deviceUUID)
+      await this.$store.commit('removeDeviceFromListBYUUID', deviceUUID)
       const devices = this.$store.state.devices
       this.saveDataToLocal('devices', devices)
     },
@@ -392,11 +391,19 @@ export default {
     * @return {Object} value
     */
     async getDataFromLocal (key, event = null) {
-      const { value } = await Storage.get({ key })
-      if (event) {
-        this.$nuxt.$emit(event, JSON.parse(value))
+      let { value } = await Storage.get({ key })
+      if (value === null) {
+        value = {}
+        if (event) {
+          this.$nuxt.$emit(event, value)
+        }
+        return value
+      } else {
+        if (event) {
+          this.$nuxt.$emit(event, JSON.parse(value))
+        }
+        return JSON.parse(value)
       }
-      return JSON.parse(value)
     },
 
     async getDeviceById (uuid, event = null) {

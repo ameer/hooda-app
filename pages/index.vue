@@ -2,30 +2,30 @@
   <v-container class="h-100">
     <v-row align="center" class="h-100">
       <v-col cols="12">
-        <div :class="{'animate__animated animate__rotateIn' : animate}">
-          <v-img src="/logo-dark-bg.svg" contain max-height="128px" />
+        <div class="text-center white--text text-h3 font-weight-black">
+          نرم افزار نگهبان هوشمند
         </div>
-
-        <animated-text />
       </v-col>
       <v-col cols="12" class="text-center mt-auto">
         <div class="d-flex align-center justify-space-around justify-md-center">
-          <v-btn
+          <!-- <v-btn
             rounded
-            class="animate__animated animate__fadeInUp mx-md-8"
+            class="mx-md-8"
             color="accent"
             to="/auth/signup"
             max-width="120px"
             width="100%"
             large
           >
-            <span class="primary--text font-weight-bold text-body-1">ثبت نام</span>
-          </v-btn>
+            <span
+              class="primary--text font-weight-bold text-body-1"
+            >ثبت نام</span>
+          </v-btn> -->
           <v-btn
             rounded
-            class="animate__animated animate__fadeInUp mx-md-8"
+            class="mx-md-8"
             color="accent"
-            to="/auth/login"
+            to="/dashboard"
             max-width="120px"
             width="100%"
             large
@@ -45,6 +45,7 @@ import { SmsRetriever } from '@awesome-cordova-plugins/sms-retriever'
 import { LocalNotifications } from '@capacitor/local-notifications'
 import AnimatedText from '~/components/animatedText.vue'
 export default {
+  // eslint-disable-next-line vue/no-unused-components
   components: { AnimatedText },
   layout: 'startup',
   data () {
@@ -57,9 +58,7 @@ export default {
       return this.$auth.loggedIn
     }
   },
-  mounted () {
-
-  },
+  mounted () {},
   created () {
     this.animate = true
   },
@@ -72,29 +71,33 @@ export default {
       })
     },
     getAppHash () {
-      SmsRetriever.getAppHash().then((res) => {
-        alert(res)
-      }).catch((err) => {
-        alert(err)
-      })
+      SmsRetriever.getAppHash()
+        .then((res) => {
+          alert(res)
+        })
+        .catch((err) => {
+          alert(err)
+        })
     },
     startWatching () {
-      SmsRetriever.startWatching().then((res) => {
-        LocalNotifications.schedule({
-          notifications: [
-            {
-              title: 'هشدار دستگاه',
-              body: res.Message,
-              id: 503,
-              schedule: {
-                at: Date.now()
+      SmsRetriever.startWatching()
+        .then((res) => {
+          LocalNotifications.schedule({
+            notifications: [
+              {
+                title: 'هشدار دستگاه',
+                body: res.Message,
+                id: 503,
+                schedule: {
+                  at: Date.now()
+                }
               }
-            }
-          ]
+            ]
+          })
         })
-      }).catch((err) => {
-        alert(err)
-      })
+        .catch((err) => {
+          alert(err)
+        })
     }
   }
 }

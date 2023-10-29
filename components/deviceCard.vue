@@ -30,7 +30,7 @@
               mdi-sim-outline
             </v-icon>
             <div class="faNum">
-              {{ device.sim_number }}
+              {{ device.simCardNumber }}
             </div>
           </div>
         </v-col>

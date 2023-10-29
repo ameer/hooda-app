@@ -132,7 +132,7 @@ export default {
   },
   computed: {
     dialogMessage () {
-      if (this.device && this.device.pivot.role === 1) {
+      if (this.device) {
         return 'آیا مطمئن هستید که می‌خواهید دستگاه را حذف کنید؟ با توجه به اینکه شما مدیر اصلی هستید با انجام این کار دستگاه از حساب کاربری سایر مدیران نیز حذف خواهد شد.'
       } else {
         return 'آیا مطمئن هستید که می‌خواهید دستگاه موردنظر را حذف کنید؟ این کار غیرقابل بازگشت است.'
@@ -142,9 +142,9 @@ export default {
   mounted () {
     this.$nuxt.$emit('getDeviceById', this.$route.params.id, 'deviceRecieved')
     this.loading = true
-    if ((this.device === null || this.device === undefined) && this.$store.state.onlineStatus) {
-      this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}`, 'deviceRecieved')
-    }
+    // if ((this.device === null || this.device === undefined) && this.$store.state.onlineStatus) {
+    //   this.$nuxt.$emit('postReq', `user/device/${this.$route.params.id}`, 'deviceRecieved')
+    // }
   },
   created () {
     this.$nuxt.$on('error', () => {
@@ -154,7 +154,7 @@ export default {
       this.loading = false
       if (resp.data !== undefined) {
         this.device = resp.data
-        this.formData.simCardNumber = this.device.sim_number
+        this.formData.simCardNumber = this.device.simCardNumber
         this.formData.nickname = this.device.nickname
         this.formData.location = this.device.location
       }
@@ -162,7 +162,7 @@ export default {
     this.$nuxt.$on('deviceUpdated', (resp) => {
       this.loading = false
       this.$toast.success('دستگاه با موفقیت بروزرسانی شد!')
-      this.$nuxt.$emit('saveDeviceToLocal', resp.data.device)
+      this.$nuxt.$emit('saveDeviceToLocal', resp)
     })
     this.$nuxt.$on('deviceDeleted', (resp) => {
       this.loading = false
@@ -183,12 +183,12 @@ export default {
     },
     updateDevice () {
       this.loading = true
-      this.$nuxt.$emit('putReq', `user/update-device/${this.$route.params.id}`, 'deviceUpdated', this.formData)
+      this.$nuxt.$emit('deviceUpdated', this.formData)
     },
     deleteDevice () {
       this.dialog = false
       this.loading = true
-      this.$nuxt.$emit('deleteReq', `user/delete-device/${this.$route.params.id}`, 'deviceDeleted')
+      this.$nuxt.$emit('deviceDeleted', '')
     }
   }
 }

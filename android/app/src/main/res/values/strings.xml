@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">hooda</string>
-    <string name="title_activity_main">hooda</string>
+    <string name="app_name">Smart Guard</string>
+    <string name="title_activity_main">Smart Guard</string>
     <string name="package_name">io.hooda.app</string>
     <string name="custom_url_scheme">io.hooda.app</string>
 </resources>

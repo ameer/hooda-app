@@ -6,8 +6,8 @@
 			"sound": "beep.wav"
 		}
 	},
-	"appId": "io.hooda.app",
-	"appName": "hooda",
+	"appId": "io.smartguard.app",
+	"appName": "Smart Guard",
 	"webDir": "dist",
 	"bundledWebRuntime": false
 }

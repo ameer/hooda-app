@@ -111,7 +111,7 @@ export default {
       return this.$store.state.appHash
     },
     simCardSlot () {
-      return this.$auth.user.simCardSlot ? this.$auth.user.simCardSlot : 0
+      return 0
     }
   },
   mounted () {
@@ -152,8 +152,9 @@ export default {
     runCommand (command) {
       this.deviceResponse = ''
       const self = this
-      console.log(self.$store.getters['commands/getCommand'](command))
-      this.checkAndSend(this.device.sim_number, command)
+      const message = self.$store.getters['commands/getCommand'](command) // + '\n' + self.appHash // For next version
+      console.log(message)
+      this.checkAndSend(this.device.simCardNumber, command)
       this.startWatching()
     },
     startWatching () {
@@ -171,6 +172,7 @@ export default {
     sendSMS (number, command) {
       const self = this
       const message = self.$store.getters['commands/getCommand'](command) // + '\n' + self.appHash // For next version
+      console.log(message)
       SMS.send(number, message, { android: { intent: '', slot: self.simCardSlot } })
         .then(() => {
           self.$toast.success('پیامک با موفقیت ارسال شد.')

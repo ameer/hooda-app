@@ -9,11 +9,11 @@ const config: CapacitorConfig = {
     },
   },
   // "server": {
-  //   "url": "http://192.168.117.181:3000",
+  //   "url": "http://192.168.1.55:3000",
   //   "cleartext": true
   // },
-  appId: 'io.hooda.app',
-  appName: 'hooda',
+  appId: 'io.smartguard.app',
+  appName: 'Smart Guard',
   webDir: 'dist',
   bundledWebRuntime: false
 };

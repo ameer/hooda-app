@@ -64,6 +64,26 @@
             <v-stepper-content step="2" class="px-0">
               <v-form ref="deviceDetailForm" v-model="valid.deviceDetailForm" class="pt-4" @submit.prevent="submitDeviceDetail">
                 <v-text-field
+                  v-model="formData.firstAdminNumber"
+                  dir="auto"
+                  class="mb-4"
+                  outlined
+                  flat
+                  type="tel"
+                  validate-on-blur
+                  label="شماره موبایل خود را وارد کنید"
+                  required
+                  maxlength="11"
+                  :rules="[
+                    v => !!v || 'شماره موبایل خود را وارد کنید',
+                    v => /^09\d{9}$/.test(v) || 'شماره موبایل صحیح نمی‌باشد.'
+                  ]"
+                  prepend-inner-icon="mdi-sim-outline"
+                  rounded
+                  hide-details="auto"
+                  tabindex="1"
+                />
+                <v-text-field
                   v-model="formData.simCardNumber"
                   dir="auto"
                   class="mb-4"
@@ -137,7 +157,7 @@
                   {{ firstAdminNumber }}
                 </span>
                 <div v-if="isDualSim">
-                  <div v-if="typeof user.simCardSlot === 'undefined'" class="text-body-1">
+                  <div class="text-body-1">
                     با توجه به اینکه از این پس کلیه ارتباطات با دستگاه از طریق این شماره خواهد بود، لطفا انتخاب کنید این شماره مربوط به کدام سیم کارت است:
                     <v-form ref="dualSimForm" v-model="valid.dualSimForm" class="pt-4" @submit.prevent="submitSMSConfirmStep">
                       <v-radio-group v-model="selectedSim" class="px-4" :rules="[rules.required]">
@@ -163,7 +183,7 @@
                       </v-btn>
                     </v-form>
                   </div>
-                  <div v-else>
+                  <!-- <div v-else>
                     <p class="text-body-1">
                       پیامک تایید از طریق سیمکارت <span class="faNum">{{ user.simCardSlot + 1 }}</span> ارسال می شود.
                     </p>
@@ -177,7 +197,7 @@
                     >
                       <span class="font-weight-bold white--text text-body-1">مرحله بعد</span>
                     </v-btn>
-                  </div>
+                  </div> -->
                 </div>
                 <div v-else>
                   <v-btn
@@ -267,7 +287,8 @@ export default {
         nickname: '',
         serialNumber: '',
         simCardNumber: '',
-        location: ''
+        location: '',
+        firstAdminNumber: ''
       },
       showManualConfirm: false
     }
@@ -297,7 +318,11 @@ export default {
       return this.$store.state.platform
     },
     firstAdminNumber () {
-      return this.$auth.user.phone
+      try {
+        return this.formData.firstAdminNumber
+      } catch (error) {
+        return false
+      }
     },
     setAdminCommand () {
       const command = this.$store.getters['commands/getCommand']({ name: 'setAdmin', adminIndex: 1, adminPhone: this.firstAdminNumber })
@@ -305,10 +330,10 @@ export default {
     },
     selectedSlot () {
       if (this.isDualSim) {
-        if (typeof this.user.simCardSlot === 'undefined') {
+        if (this.user && typeof this.user.simCardSlot === 'undefined') {
           return this.selectedSim - 1
         } else {
-          return this.user.simCardSlot
+          return 0
         }
       } else {
         return 0
@@ -456,7 +481,7 @@ export default {
         return false
       }
       this.$store.commit('commands/setCurrentPassword', '0000')
-      this.$nuxt.$emit('postReq', 'user/check-device', 'deviceChecked', this.formData)
+      this.$nuxt.$emit('deviceChecked', { status: 200, data: { message: 'شماره سریال دستگاه صحیح است' } })
     },
     async submitDeviceDetail () {
       if (this.platform !== 'web') {
@@ -534,7 +559,10 @@ export default {
       const error = function (e) { this.$toast.error('Something went wrong:' + e) }
       SMS.hasPermission(success, error)
     },
-
+    generateUUID () {
+      const w = () => { return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1) }
+      return `${w()}${w()}-${w()}-${w()}-${w()}-${w()}${w()}${w()}`
+    },
     saveDeviceToLocal (device) {
       this.$nuxt.$emit('saveDeviceToLocal', device)
     },
@@ -543,8 +571,10 @@ export default {
     },
     syncDeviceWithServer () {
       this.loading = true
+      this.formData.uuid = this.generateUUID()
+      this.formData.psw = '0000'
       this.formData.devicePassword = this.$store.getters['commands/getCurrentPassword'] || '0000'
-      this.$nuxt.$emit('postReq', 'user/add-new-device', 'deviceAdded', this.formData)
+      this.$nuxt.$emit('deviceAdded', this.formData)
     }
   }
 }

@@ -4,7 +4,7 @@
       <v-col cols="12" sm="6" class="pb-0">
         <div class="text-center">
           <h4 class="text--primary mb-2">
-            به هودا خوش آمدید
+            به نگهبان هوشمند خوش آمدید
           </h4>
           <p class="text--secondary text-body-2 mb-2">
             {{ subtitle }}

@@ -1,16 +1,16 @@
 export const state = () => ({
   currentPassword: '0000',
   commands: {
-    setAdmin: { sms: '$currentPassword*hooda*admin*$adminIndex*$mobile', isAction: false },
+    setAdmin: { sms: '$currentPassword*pn*$adminIndex*$mobile', isAction: false },
     activateAntiTheft: { sms: '$currentPassword*on', isAction: false },
     deactivateAntiTheft: { sms: '$currentPassword*off', isAction: false },
-    getTemperature: { sms: '$currentPassword*temp', isAction: false },
-    simCardCredit: { sms: '$currentPassword*credit', isAction: false },
-    deviceAntenQuality: { sms: '$currentPassword*antenna', isAction: false },
-    getAdminList: { sms: '$currentPassword*radmin', isAction: false },
-    removeAdmin: { sms: '$currentPassword*hooda*admin*$adminIndex*0', isAction: true, action: 'removeAdmin', needsInternet: true },
-    // resetFactory: { sms: '$currentPassword*freset', isAction: false, needConfirm: true, confirmMessage: 'آیا از انجام این عمل اطمینان دارید؟ کلیه اطلاعات دستگاه پاک خواهد شد.', confirmTitle: 'تایید بازگشت به تنظیمات کارخانه' },
-    changeDevicePassword: { sms: '$currentPassword*np*$newPassword', isAction: true, action: 'changeDevicePassword', needsInternet: true }
+    getTemperature: { sms: '$currentPassword*th?', isAction: false },
+    simCardCredit: { sms: '$currentPassword*rp?', isAction: false },
+    deviceAntenQuality: { sms: '$currentPassword*ant?', isAction: false },
+    getAdminList: { sms: '$currentPassword*pn?', isAction: false },
+    // removeAdmin: { sms: '$currentPassword*admin*$adminIndex*0', isAction: true, action: 'removeAdmin', needsInternet: true },
+    resetFactory: { sms: '$currentPassword*rsf', isAction: false, needConfirm: true, confirmMessage: 'آیا از انجام این عمل اطمینان دارید؟ کلیه اطلاعات دستگاه پاک خواهد شد.', confirmTitle: 'تایید بازگشت به تنظیمات کارخانه' },
+    changeDevicePassword: { sms: 'ps*$currentPassword*$newPassword', isAction: true, action: 'changeDevicePassword', needsInternet: true }
   }
 })
 export const mutations = {

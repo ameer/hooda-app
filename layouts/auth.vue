@@ -49,17 +49,6 @@
       </v-app-bar-nav-icon>
     </v-app-bar>
     <v-main class="accent h-full">
-      <v-container fluid class="h-1/3">
-        <img
-          v-if="currentPage !== 'auth-signup'"
-          src="/logo.svg"
-          width="100%"
-          height="100%"
-          style="max-height:128px;"
-          @click="goFullScreen"
-        >
-        <img v-else src="/svg/signup.svg" width="100%" height="100%" @click="goFullScreen">
-      </v-container>
       <Nuxt />
     </v-main>
     <!-- <v-footer
